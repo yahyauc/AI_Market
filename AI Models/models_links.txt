@@ -1,0 +1,51 @@
+# ─────────────────────────────────────────────────────────
+#  SMART SUPERMARKET — AI Models Download Links
+#  Final Year Project (PFE) — IDIA Students
+#  École Supérieure de Technologie, Beni Mellal — 2025
+# ─────────────────────────────────────────────────────────
+#
+#  These model files are NOT included in the repository
+#  because they are too large for GitHub (> 100MB).
+#  Download them manually and place them in:
+#
+#      Backend/models_ai/
+#
+# ─────────────────────────────────────────────────────────
+
+
+## MODEL 1 — Empty Shelf Detector
+# ─────────────────────────────────
+# Name        : empty_shelf.pt
+# Type        : YOLOv11x — Object Detection
+# Task        : Detects empty slots on supermarket shelves
+# Trained on  : Custom dataset (Google Colab)
+# Place at    : Backend/models_ai/empty_shelf.pt
+#
+# Download link: https://drive.google.com/file/d/1ccBdgC8ONB4RjCTdurAq2lfYajOBij2m/view?usp=sharing
+
+
+## MODEL 2 — Product Counter (if available)
+# ─────────────────────────────────────────────
+# Name        : product_counter.pt
+# Type        : YOLOv11x — Instance Counting
+# Task        : Counts products on shelves
+# Place at    : Backend/models_ai/product_counter.pt
+#
+  # Download link:
+
+
+# ─────────────────────────────────────────────────────────
+#  HOW TO USE AFTER DOWNLOADING
+# ─────────────────────────────────────────────────────────
+#
+#  1. Download the .pt file(s) from the links above
+#  2. Create the folder if it doesn't exist:
+#         mkdir Backend/models_ai
+#  3. Place the file(s) inside:
+#         Backend/models_ai/empty_shelf.pt
+#  4. Install dependencies:
+#         pip install ultralytics opencv-python
+#  5. Run the backend normally:
+#         python app.py
+#
+# ─────────────────────────────────────────────────────────

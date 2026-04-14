@@ -1,6 +1,0 @@
-Product detection module :
-
-
-
-
-Space detection Module :
