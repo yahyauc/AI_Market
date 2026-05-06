@@ -325,8 +325,8 @@ p  { font-size: 14px; color: var(--text-2); }
 /* ── Stat Cards ── */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
     margin-bottom: 24px;
 }
 
@@ -334,7 +334,7 @@ p  { font-size: 14px; color: var(--text-2); }
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 20px;
+    padding: 16px;
     box-shadow: var(--shadow-sm);
     position: relative;
     overflow: hidden;
@@ -344,13 +344,13 @@ p  { font-size: 14px; color: var(--text-2); }
 .stat-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
 
 .stat-icon {
-    width: 40px; height: 40px;
-    border-radius: 10px;
+    width: 36px; height: 36px;
+    border-radius: 9px;
     display: flex; align-items: center; justify-content: center;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
-.stat-icon i { font-size: 18px; }
+.stat-icon i { font-size: 16px; }
 
 .stat-icon.blue   { background: var(--primary-bg); }
 .stat-icon.blue i { color: var(--primary); }
@@ -365,20 +365,20 @@ p  { font-size: 14px; color: var(--text-2); }
 .stat-icon.red i { color: var(--red); }
 
 .stat-value {
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 800;
     color: var(--text);
     line-height: 1;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
 }
 
 .stat-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--muted);
     margin-top: 5px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 /* ── Buttons ── */
@@ -839,7 +839,7 @@ tbody tr:hover { background: var(--bg); }
 
 /* ── Responsive ── */
 @media (max-width: 1100px) {
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 768px) {
