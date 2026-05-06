@@ -3,7 +3,7 @@
    Theme: Light & Professional
    ───────────────────────────────────────────── */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Satisfy&display=swap');
 
 /* ── Variables ── */
 :root {
@@ -93,8 +93,9 @@ p  { font-size: 14px; color: var(--text-2); }
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 16px;
-    font-weight: 700;
+    font-family: 'Satisfy', cursive;
+    font-size: 26px;
+    font-weight: 400;
     color: var(--text);
     white-space: nowrap;
 }
@@ -117,8 +118,9 @@ p  { font-size: 14px; color: var(--text-2); }
 .nav-link {
     padding: 7px 14px;
     border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 500;
+    font-family: 'Satisfy', cursive;
+    font-size: 16px;
+    font-weight: 400;
     color: var(--text-2);
     transition: background 0.15s, color 0.15s;
 }
@@ -131,6 +133,11 @@ p  { font-size: 14px; color: var(--text-2); }
     align-items: center;
     gap: 12px;
     margin-left: auto;
+}
+
+.nav-right .btn {
+    font-family: 'Satisfy', cursive;
+    font-size: 15px;
 }
 
 .cart-btn {

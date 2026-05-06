@@ -67,6 +67,10 @@ def create_app():
     def serve_images(filename):
         return send_from_directory(os.path.join(frontend_dir, "images"), filename)
 
+    @app.route("/fonts/<path:filename>")
+    def serve_fonts(filename):
+        return send_from_directory(os.path.join(frontend_dir, "fonts"), filename)
+
     @app.errorhandler(404)
     def not_found(e):
         return jsonify({"error": "Resource not found"}), 404
