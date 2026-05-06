@@ -1,58 +1,49 @@
-================================================================
-  SMART MARKET — AI MODEL DOWNLOAD INSTRUCTIONS
-================================================================
+# ─────────────────────────────────────────────────────────
+#  SMART SUPERMARKET — AI Models Download Links
+#  Final Year Project (PFE) — IDIA Students
+#  École Supérieure de Technologie, Beni Mellal — 2025
+# ─────────────────────────────────────────────────────────
+#
+#  These model files are NOT included in the repository
+#  because they are too large for GitHub (> 100MB).
+#  Download them manually and place them in:
+#
+#     AI Models/
+#
+# ─────────────────────────────────────────────────────────
 
-This project uses two custom-trained YOLOv8 models for real-time
-shelf monitoring. These files are too large for GitHub and must
-be downloaded separately.
 
-----------------------------------------------------------------
-  MODEL FILES REQUIRED
-----------------------------------------------------------------
+## MODEL 1 — Empty Shelf Detector
+# ─────────────────────────────────
+# Name        : empty_shelf.pt
+# Type        : YOLOv11x — Object Detection
+# Task        : Detects empty slots on supermarket shelves
+# Trained on  : Custom dataset (Google Colab)
+# Place at    : Backend/models_ai/empty_shelf.pt
+#
+# Download link: https://drive.google.com/file/d/1ccBdgC8ONB4RjCTdurAq2lfYajOBij2m/view?usp=sharing
 
-1. Product_detector_model.pt   (~326 MB)
-   - Detects and counts individual products on shelves
-   - Custom YOLOv8 model
 
-2. impty_shelfs.pt             (~109 MB)
-   - Detects empty shelf spaces that need restocking
-   - Custom YOLOv8 model
+## MODEL 2 — Product Counter (if available)
+# ─────────────────────────────────────────────
+# Name        : product_counter.pt
+# Type        : YOLOv11x — Instance Counting
+# Task        : Counts products on shelves
+# Place at    : Backend/models_ai/product_counter.pt
+#
+# Download link: https://drive.google.com/file/d/1Dp7PcALhXQxrhL6fUljVv8AQTd2PbzQn/view?usp=sharing
 
-----------------------------------------------------------------
-  DOWNLOAD LINKS
-----------------------------------------------------------------
 
-Download both models from the following link:
-https://drive.google.com/drive/folders/YOUR_SHARED_FOLDER_ID
-
-(Contact the project team if the link is expired or unavailable)
-
-----------------------------------------------------------------
-  INSTALLATION
-----------------------------------------------------------------
-
-After downloading, place both .pt files in THIS directory:
-
-   Modules/
-   ├── Product_detector_model.pt
-   └── impty_shelfs.pt
-
-The backend (Backend/config.py) is configured to look for the
-models in this exact location relative to the project root.
-
-----------------------------------------------------------------
-  VERIFICATION
-----------------------------------------------------------------
-
-To verify the models are correctly placed, start the backend
-and visit:
-
-   http://127.0.0.1:5000/api/vision/diagnostic
-
-This endpoint will show whether each model file is found and
-its size in MB.
-
-================================================================
-  Team: Kanar Khalid, Hamza Yahia, Marouane Rhazlani
-  Ecole Superieure de Technologie — 2025
-================================================================
+# ─────────────────────────────────────────────────────────
+#  HOW TO USE AFTER DOWNLOADING
+# ─────────────────────────────────────────────────────────
+#
+#  1. Download the .pt file(s) from the links above
+#  2. Create the folder if it doesn't exist:
+#         mkdir Backend/models_ai
+#  3. Place the file(s) inside:
+#         Backend/models_ai/empty_shelf.pt
+#  4. Install dependencies:
+#         pip install ultralytics opencv-python
+#  5. Run the backend normally:
+#         python app.py

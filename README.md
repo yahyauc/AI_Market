@@ -4,11 +4,11 @@
 
 **An intelligent supermarket management platform powered by Computer Vision and AI**
 
-*Final Year Project (PFE) — École Supérieure de Technologie*
+*Final Year Project (PFE) — IDIA Students, École Supérieure de Technologie, Beni Mellal*
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.0-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com)
-[![YOLOv8](https://img.shields.io/badge/YOLOv8-Ultralytics-00FFFF?style=for-the-badge&logo=yolo&logoColor=black)](https://docs.ultralytics.com)
+[![YOLOv11x](https://img.shields.io/badge/YOLOv11x-Ultralytics-00FFFF?style=for-the-badge&logo=yolo&logoColor=black)](https://docs.ultralytics.com)
 [![Groq](https://img.shields.io/badge/Groq-LLaMA_3.3-F55036?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com)
 [![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org)
@@ -40,7 +40,7 @@
 
 ## 🎯 About the Project
 
-**Smart Market** is a full-stack AI-powered supermarket management system designed as a Final Year Project (Projet de Fin d'Études). It combines a modern e-commerce storefront with a powerful administration dashboard, real-time AI-based shelf monitoring using computer vision (YOLOv8), and an intelligent AI chatbot assistant powered by Groq's LLaMA 3.3 model.
+**Smart Market** is a full-stack AI-powered supermarket management system designed as a Final Year Project (Projet de Fin d'Études). It combines a modern e-commerce storefront with a powerful administration dashboard, real-time AI-based shelf monitoring using computer vision (YOLOv11x), and an intelligent AI chatbot assistant powered by Groq's LLaMA 3.3 model.
 
 The system enables supermarket administrators to:
 - **Monitor shelf stock in real-time** using camera feeds and YOLO object detection
@@ -70,8 +70,8 @@ The system enables supermarket administrators to:
 - AI business assistant chatbot with markdown-formatted reports
 
 ### 🤖 AI Vision System (Module 1 — Computer Vision)
-- **Product Detector Model** — Custom-trained YOLOv8 model that detects and counts products on supermarket shelves
-- **Empty Shelf Detector Model** — Custom-trained YOLOv8 model that identifies empty shelf spaces
+- **Product Detector Model** — Custom-trained YOLOv11x model that detects and counts products on supermarket shelves
+- **Empty Shelf Detector Model** — Custom-trained YOLOv11x model that identifies empty shelf spaces
 - Real-time camera feed integration (supports webcams, IP cameras, YouTube streams, RTSP)
 - Automatic stock level calculation based on detection results
 - Percentage-based alert system:
@@ -113,25 +113,25 @@ The system enables supermarket administrators to:
 
 ## 🧠 AI Modules (Computer Vision)
 
-This project uses **two custom-trained YOLOv8 models** for real-time supermarket shelf analysis:
+This project uses **two custom-trained YOLOv11x models** for real-time supermarket shelf analysis:
 
-### Module 1 — Product Detector (`Product_detector_model.pt`)
+### Module 1 — Product Counter (`product_counter.pt`)
 | Detail | Value |
 |--------|-------|
-| **Architecture** | YOLOv8 (Ultralytics) |
+| **Architecture** | YOLOv11x (Ultralytics) |
 | **Purpose** | Detect and count individual products on supermarket shelves |
-| **File Size** | ~326 MB |
+| **Trained on** | Custom dataset (Google Colab) |
 | **Input** | RGB image of a shelf (any resolution) |
-| **Output** | Bounding boxes with class labels and confidence scores |
+| **Output** | Bounding boxes with instance counting |
 
 This model scans shelf images and identifies each visible product. The total count is used to determine current stock levels and is automatically synced to the product database.
 
-### Module 2 — Empty Shelf Detector (`impty_shelfs.pt`)
+### Module 2 — Empty Shelf Detector (`empty_shelf.pt`)
 | Detail | Value |
 |--------|-------|
-| **Architecture** | YOLOv8 (Ultralytics) |
-| **Purpose** | Detect empty shelf spaces that need restocking |
-| **File Size** | ~109 MB |
+| **Architecture** | YOLOv11x (Ultralytics) |
+| **Purpose** | Detect empty slots on supermarket shelves |
+| **Trained on** | Custom dataset (Google Colab) |
 | **Input** | RGB image of a shelf (any resolution) |
 | **Output** | Bounding boxes highlighting empty shelf areas |
 
@@ -156,7 +156,7 @@ This model identifies gaps and empty spaces on shelves. Combined with the produc
 |-------|-----------|
 | **Backend** | Python 3.10+, Flask 3.0, Flask-SQLAlchemy, Flask-CORS |
 | **Database** | SQLite (via SQLAlchemy ORM) |
-| **AI / Vision** | Ultralytics YOLOv8, OpenCV, Pillow, NumPy |
+| **AI / Vision** | Ultralytics YOLOv11x, OpenCV, Pillow, NumPy |
 | **AI / Chatbot** | Groq Cloud API, LLaMA 3.3 70B Versatile |
 | **Frontend** | HTML5, CSS3 (Vanilla), JavaScript (ES6 Modules) |
 | **Icons** | Font Awesome 6.5 |
@@ -441,7 +441,7 @@ export ADMIN_EMAIL="admin@example.com"
 │               Flask Backend (Python)                 │
 │  ┌─────────┐  ┌──────────┐  ┌─────────────────────┐  │
 │  │Auth/CRUD│  │ Chatbot  │  │    Vision Engine    │  │
-│  │ Routes  │  │(Groq API)│  │ (YOLOv8 + OpenCV)   │  │
+│  │ Routes  │  │(Groq API)│  │ (YOLOv11x + OpenCV)  │  │
 │  └────┬────┘  └────┬─────┘  └──────────┬──────────┘  │
 │       │            │                    │             │
 │       └────────────┴────────────────────┘             │
@@ -459,13 +459,13 @@ Camera/Image Upload
        │
        ▼
   ┌──────────┐     ┌─────────────────────┐
-  │  /detect  │────▶│  YOLOv8 Product     │──── products count
-  │ endpoint  │     │  Detector Model     │
+  │  /detect  │────▶│  YOLOv11x Product   │──── products count
+  │ endpoint  │     │  Counter Model      │
   └──────────┘     └─────────────────────┘
        │
        │           ┌─────────────────────┐
-       └──────────▶│  YOLOv8 Empty Shelf │──── empty slots count
-                   │  Detector Model     │
+       └──────────▶│  YOLOv11x Empty     │──── empty slots count
+                   │  Shelf Detector     │
                    └─────────────────────┘
                             │
                             ▼
@@ -488,7 +488,7 @@ Camera/Image Upload
 
 ## 👥 Team
 
-This project was created as a **Final Year Project (PFE)** at **École Supérieure de Technologie** by:
+This project was created as a **Final Year Project (PFE)** by **IDIA students** at **École Supérieure de Technologie, Beni Mellal** :
 
 | Name | Role |
 |------|------|
@@ -508,6 +508,6 @@ This project is developed for educational purposes as part of a Final Year Proje
 
 **Built with ❤️ by Kanar Khalid, Hamza Yahia & Marouane Rhazlani**
 
-*École Supérieure de Technologie — 2025*
+*IDIA — École Supérieure de Technologie, Beni Mellal — 2025*
 
 </div>
