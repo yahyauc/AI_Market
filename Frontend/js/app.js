@@ -101,10 +101,12 @@ export function buildNavbar(activePage = "") {
 
     const prefix = window.location.pathname.includes("/pages/") ? "" : "pages/";
 
+    const imgPrefix = window.location.pathname.includes("/pages/") ? "../" : "";
+
     nav.className = "navbar";
     nav.innerHTML = `
         <a href="../index.html" class="nav-brand">
-            <div class="brand-icon"><i class="fa-solid fa-cart-shopping" style="color:white;font-size:14px"></i></div>
+            <img src="${imgPrefix}images/logo.png" alt="Smart Supermarket" style="width:32px;height:32px;border-radius:8px;object-fit:cover;">
             Smart Supermarket
         </a>
         <div class="nav-links">
