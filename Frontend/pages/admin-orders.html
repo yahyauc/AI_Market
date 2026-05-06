@@ -74,11 +74,11 @@
         <!-- Status tabs -->
         <div class="flex gap-8 mb-24" style="flex-wrap:wrap" id="status-tabs">
             <button class="btn btn-primary btn-sm" data-status="all" onclick="setStatusFilter('all')">All</button>
-            <button class="btn btn-outline btn-sm" data-status="pending"   onclick="setStatusFilter('pending')">⏳ Pending</button>
-            <button class="btn btn-outline btn-sm" data-status="confirmed" onclick="setStatusFilter('confirmed')">✅ Confirmed</button>
-            <button class="btn btn-outline btn-sm" data-status="shipped"   onclick="setStatusFilter('shipped')">🚚 Shipped</button>
-            <button class="btn btn-outline btn-sm" data-status="delivered" onclick="setStatusFilter('delivered')">📬 Delivered</button>
-            <button class="btn btn-outline btn-sm" data-status="cancelled" onclick="setStatusFilter('cancelled')">❌ Cancelled</button>
+            <button class="btn btn-outline btn-sm" data-status="pending"   onclick="setStatusFilter('pending')"><i class="fa-solid fa-clock"></i> Pending</button>
+            <button class="btn btn-outline btn-sm" data-status="confirmed" onclick="setStatusFilter('confirmed')"><i class="fa-solid fa-circle-check"></i> Confirmed</button>
+            <button class="btn btn-outline btn-sm" data-status="shipped"   onclick="setStatusFilter('shipped')"><i class="fa-solid fa-truck"></i> Shipped</button>
+            <button class="btn btn-outline btn-sm" data-status="delivered" onclick="setStatusFilter('delivered')"><i class="fa-solid fa-box-open"></i> Delivered</button>
+            <button class="btn btn-outline btn-sm" data-status="cancelled" onclick="setStatusFilter('cancelled')"><i class="fa-solid fa-circle-xmark"></i> Cancelled</button>
         </div>
 
         <!-- Table -->
@@ -220,7 +220,7 @@
                     <span class="badge status-${o.status}">${o.status}</span>
                     <span style="font-size:13px;color:var(--muted)">${o.date}</span>
                 </div>
-                ${o.note ? `<div class="alert alert-info" style="margin-bottom:12px">📝 ${o.note}</div>` : ""}
+                ${o.note ? `<div class="alert alert-info" style="margin-bottom:12px"><i class="fa-solid fa-note-sticky" style="margin-right:4px"></i> ${o.note}</div>` : ""}
             </div>
             <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:16px">
                 <table style="width:100%;font-size:13px">

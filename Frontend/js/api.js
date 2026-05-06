@@ -89,16 +89,85 @@ export async function getStats() {
     return r.json();
 }
 
-export async function simulateAI() {
-    const r = await fetch(`${API}/alerts/simulate`);
+
+
+// ── Zones ─────────────────────────────────────────────────────────
+export async function getZones() {
+    const r = await fetch(`${API}/zones`);
+    return r.json();
+}
+
+export async function getZone(id) {
+    const r = await fetch(`${API}/zones/${id}`);
+    return r.json();
+}
+
+export async function createZone(data) {
+    const r = await fetch(`${API}/zones`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+    return r.json();
+}
+
+export async function updateZone(id, data) {
+    const r = await fetch(`${API}/zones/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+    return r.json();
+}
+
+export async function deleteZone(id) {
+    const r = await fetch(`${API}/zones/${id}`, { method: "DELETE" });
+    return r.json();
+}
+
+export async function toggleZone(id) {
+    const r = await fetch(`${API}/zones/${id}/toggle`, { method: "POST" });
+    return r.json();
+}
+
+// ── Vision Detection ──────────────────────────────────────────────
+export async function runDetection(zoneId, imageFile) {
+    const fd = new FormData();
+    fd.append("zone_id", zoneId);
+    fd.append("image", imageFile);
+    const r = await fetch(`${API}/vision/detect`, { method: "POST", body: fd });
+    return r.json();
+}
+
+export async function runDetectionBase64(zoneId, base64Data) {
+    const r = await fetch(`${API}/vision/detect`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ zone_id: zoneId, image_base64: base64Data })
+    });
+    return r.json();
+}
+
+export async function getZoneLogs(zoneId, limit = 20) {
+    const r = await fetch(`${API}/zones/${zoneId}/logs?limit=${limit}`);
+    return r.json();
+}
+
+export async function getVisionSummary() {
+    const r = await fetch(`${API}/vision/summary`);
+    return r.json();
+}
+
+export async function getLiveDashboard() {
+    const r = await fetch(`${API}/vision/live-dashboard`);
     return r.json();
 }
 
 // ── Session helpers ───────────────────────────────────────────────
-export function getUser()        { return JSON.parse(localStorage.getItem("user")); }
-export function setUser(user)    { localStorage.setItem("user", JSON.stringify(user)); }
-export function removeUser()     { localStorage.removeItem("user"); }
-export function isAdmin()        { return getUser()?.role === "admin"; }
+export function getUser() { return JSON.parse(localStorage.getItem("user")); }
+export function setUser(user) { localStorage.setItem("user", JSON.stringify(user)); }
+export function removeUser() { localStorage.removeItem("user"); }
+export function isAdmin() { return getUser()?.role === "admin"; }
 export function requireAuth(redirect = "../pages/login.html") {
     if (!getUser()) { window.location.href = redirect; return null; }
     return getUser();

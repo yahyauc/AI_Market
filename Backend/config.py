@@ -10,6 +10,12 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "smart-supermarket-secret-2025")
     LOW_STOCK_THRESHOLD = 5
 
+    # ── YOLO Vision Models ────────────────────────────────────────
+    PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+    MODULES_DIR  = os.path.abspath(os.path.join(PROJECT_ROOT, "..", "Modules"))
+    YOLO_EMPTY_SHELF_MODEL   = os.path.join(MODULES_DIR, "impty_shelfs.pt")
+    YOLO_PRODUCT_DETECTOR    = os.path.join(MODULES_DIR, "Product_detector_model.pt")
+
     # ── Gmail SMTP ────────────────────────────────────────────────
     MAIL_SERVER  = "smtp.gmail.com"
     MAIL_PORT    = 587

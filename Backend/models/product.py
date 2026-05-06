@@ -11,6 +11,7 @@ class Product(db.Model):
     price       = db.Column(db.Float,   nullable=False)
     stock       = db.Column(db.Integer, nullable=False, default=0)
     image_url   = db.Column(db.String(255), nullable=True, default="")
+    zone_id     = db.Column(db.Integer, db.ForeignKey("zones.id"), nullable=True)
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
 
     order_items = db.relationship("OrderItem", backref="product", lazy=True)
@@ -24,5 +25,6 @@ class Product(db.Model):
             "price":       self.price,
             "stock":       self.stock,
             "image_url":   self.image_url,
+            "zone_id":     self.zone_id,
             "created_at":  self.created_at.strftime("%Y-%m-%d")
         }

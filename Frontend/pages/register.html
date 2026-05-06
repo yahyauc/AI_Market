@@ -10,7 +10,7 @@
 <div class="auth-page">
     <div class="auth-card fade-up">
         <div class="auth-logo">
-            <div class="brand-icon">🛒</div>
+            <div class="brand-icon"><i class="fa-solid fa-cart-shopping" style="color:white;font-size:15px"></i></div>
             <h2>Create account</h2>
             <p>Join Smart Supermarket today</p>
         </div>
@@ -63,7 +63,7 @@
         const res = await register(username, email, password);
 
         if (res.error) {
-            errorBox.innerHTML = `<div class="alert alert-error">❌ ${res.error}</div>`;
+            errorBox.innerHTML = `<div class="alert alert-error">${res.error}</div>`;
             btn.disabled = false;
             btn.textContent = "Create Account";
             return;

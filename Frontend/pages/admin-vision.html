@@ -2,327 +2,427 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Vision Models — Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision — Zone Detection — Admin</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        .vision-grid {
+        /* ── Zone Management ──────────────────────────────────────── */
+        .zone-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 14px;
+        }
+
+        .zone-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
             margin-bottom: 28px;
         }
 
-        .model-card {
+        .zone-card {
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: box-shadow 0.2s;
         }
 
-        .model-card:hover { box-shadow: var(--shadow); }
+        .zone-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+        .zone-card.selected { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79,142,247,0.15); }
 
-        .model-header {
-            padding: 20px 22px 16px;
-            border-bottom: 1px solid var(--border);
+        .zone-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            margin-bottom: 10px;
         }
 
-        .model-title-group {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .model-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-
-        .model-icon.blue   { background: var(--primary-bg); }
-        .model-icon.orange { background: var(--orange-bg); }
-
-        .model-name {
+        .zone-card-name {
             font-size: 15px;
             font-weight: 700;
             color: var(--text);
         }
 
-        .model-subtitle {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 2px;
+        .zone-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* Toggle switch */
-        .toggle-wrap {
+        .zone-badge.active { background: var(--green-bg); color: var(--green); }
+        .zone-badge.inactive { background: var(--border); color: var(--muted); }
+
+        .zone-card-desc {
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .zone-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+
+        .zone-tag {
+            font-size: 10px;
+            font-weight: 600;
+            background: var(--primary-bg);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .zone-stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .zone-stat {
+            text-align: center;
+        }
+
+        .zone-stat-num {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .zone-stat-label {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .zone-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .zone-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: all 0.15s;
+        }
+
+        .zone-action-btn:hover { background: var(--primary-bg); color: var(--primary); border-color: var(--primary); }
+        .zone-action-btn.danger:hover { background: var(--red-bg); color: var(--red); border-color: var(--red); }
+
+        /* ── Add Zone Card ────────────────────────────────────────── */
+        .zone-card.add-zone {
+            border: 2px dashed var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 180px;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+
+        .zone-card.add-zone:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-bg);
+        }
+
+        .zone-card.add-zone i { font-size: 28px; margin-bottom: 8px; }
+        .zone-card.add-zone span { font-size: 13px; font-weight: 600; }
+
+        /* ── Detection Panel ──────────────────────────────────────── */
+        .detection-panel {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .camera-area {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .camera-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .camera-toolbar-left {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .toggle-label {
+        .camera-toolbar-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .camera-toolbar-zone {
             font-size: 12px;
-            font-weight: 600;
             color: var(--muted);
         }
 
-        .toggle {
-            position: relative;
-            width: 44px;
-            height: 24px;
+        .camera-toolbar-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cam-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
             cursor: pointer;
+            transition: all 0.15s;
         }
 
-        .toggle input { display: none; }
+        .cam-btn:hover { background: var(--primary-bg); color: var(--primary); border-color: var(--primary); }
 
-        .toggle-track {
-            position: absolute;
-            inset: 0;
-            background: var(--border2);
-            border-radius: 24px;
-            transition: background 0.25s;
+        .cam-btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
-        .toggle-thumb {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 18px;
-            height: 18px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-            transition: transform 0.25s;
+        .cam-btn.primary:hover { background: var(--primary-h); }
+
+        .cam-btn.danger {
+            background: var(--red);
+            color: white;
+            border-color: var(--red);
         }
 
-        .toggle input:checked ~ .toggle-track { background: var(--primary); }
-        .toggle input:checked ~ .toggle-thumb { transform: translateX(20px); }
+        .cam-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Camera feed area */
-        .camera-feed {
+        .camera-viewport {
             position: relative;
             background: #0f1117;
-            height: 240px;
+            height: 400px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
         }
 
-        .camera-offline {
-            text-align: center;
-            color: rgba(255,255,255,0.4);
-        }
-
-        .camera-offline .cam-icon { font-size: 42px; margin-bottom: 10px; }
-        .camera-offline p { font-size: 13px; }
-
-        .camera-online {
+        .camera-viewport video,
+        .camera-viewport img {
             width: 100%;
             height: 100%;
+            object-fit: contain;
+        }
+
+        .detection-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .camera-placeholder {
+            text-align: center;
+            color: rgba(255,255,255,0.35);
+        }
+
+        .camera-placeholder i { font-size: 52px; margin-bottom: 12px; display: block; }
+        .camera-placeholder p { font-size: 13px; }
+        .camera-placeholder .hint { font-size: 11px; margin-top: 6px; opacity: 0.6; }
+
+        .scanning-overlay {
+            position: absolute;
+            inset: 0;
             display: none;
             align-items: center;
             justify-content: center;
+            background: rgba(0,0,0,0.6);
+            z-index: 10;
         }
 
-        /* Simulated detection boxes */
-        .detection-canvas {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: none;
-        }
+        .scanning-overlay.active { display: flex; }
 
-        .det-box {
-            position: absolute;
-            border: 2px solid #22c55e;
-            border-radius: 4px;
-            animation: pulse-box 2s infinite;
-        }
-
-        .det-label {
-            position: absolute;
-            top: -22px;
-            left: 0;
-            background: #22c55e;
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 4px;
-            white-space: nowrap;
-        }
-
-        .det-box.empty {
-            border-color: #ef4444;
-        }
-
-        .det-box.empty .det-label {
-            background: #ef4444;
-        }
-
-        @keyframes pulse-box {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.6; }
-        }
-
-        /* Status indicator */
-        .status-dot {
-            width: 8px;
-            height: 8px;
+        .scanning-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top-color: var(--primary);
             border-radius: 50%;
-            display: inline-block;
-            margin-right: 6px;
+            animation: spin 0.8s linear infinite;
         }
 
-        .status-dot.online  { background: var(--green); animation: blink 1.5s infinite; }
-        .status-dot.offline { background: var(--muted); }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.3; }
+        /* Detection overlay canvas */
+        .detection-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
         }
 
-        /* Model info section */
-        .model-info {
-            padding: 16px 22px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .info-row {
+        /* ── Results Panel ────────────────────────────────────────── */
+        .results-panel {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            font-size: 13px;
+            flex-direction: column;
         }
 
-        .info-row:not(:last-child) {
+        .results-header {
+            padding: 14px 20px;
             border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
         }
 
-        .info-key   { color: var(--muted); font-weight: 500; }
-        .info-value { color: var(--text);  font-weight: 600; }
-
-        /* Detection results */
-        .detection-results {
-            padding: 16px 22px;
+        .results-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
         }
 
-        .result-title {
+        .result-empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+        }
+
+        .result-empty-state i { font-size: 36px; margin-bottom: 10px; display: block; }
+        .result-empty-state p { font-size: 13px; }
+
+        .result-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .result-summary-card {
+            text-align: center;
+            padding: 14px;
+            border-radius: var(--radius);
+        }
+
+        .result-summary-card.products {
+            background: var(--primary-bg);
+            color: var(--primary);
+        }
+
+        .result-summary-card.empty-slots {
+            background: var(--red-bg);
+            color: var(--red);
+        }
+
+        .result-summary-num {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .result-summary-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .alert-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: var(--radius);
             font-size: 12px;
+            font-weight: 700;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .alert-badge.ok { background: var(--green-bg); color: var(--green); }
+        .alert-badge.medium { background: var(--orange-bg); color: var(--orange); }
+        .alert-badge.high { background: var(--red-bg); color: var(--red); }
+        .alert-badge.low { background: var(--primary-bg); color: var(--primary); }
+
+        .detection-list-title {
+            font-size: 11px;
             font-weight: 700;
             color: var(--muted);
             text-transform: uppercase;
-            letter-spacing: 0.7px;
-            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
         }
 
-        .result-item {
+        .detection-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 8px 12px;
             border-radius: var(--radius);
-            margin-bottom: 6px;
-            font-size: 13px;
+            margin-bottom: 5px;
+            font-size: 12px;
             font-weight: 500;
         }
 
-        .result-item.detected {
-            background: var(--green-bg);
-            color: var(--green);
+        .detection-item.product { background: var(--primary-bg); color: var(--primary); }
+        .detection-item.empty { background: var(--red-bg); color: var(--red); }
+
+        .detection-conf {
+            font-size: 11px;
+            font-weight: 700;
+            opacity: 0.8;
         }
 
-        .result-item.empty {
-            background: var(--red-bg);
-            color: var(--red);
-        }
-
-        .result-item.counting {
-            background: var(--primary-bg);
-            color: var(--primary);
-        }
-
-        .result-count {
-            font-weight: 800;
-            font-size: 15px;
-        }
-
-        /* Scan button */
-        .scan-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: var(--radius);
-            font-size: 14px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: all 0.15s;
-            width: 100%;
-            justify-content: center;
-            margin-top: 12px;
-        }
-
-        .scan-btn.blue {
-            background: var(--primary);
-            color: white;
-        }
-
-        .scan-btn.blue:hover { background: var(--primary-h); }
-
-        .scan-btn.orange {
-            background: var(--orange);
-            color: white;
-        }
-
-        .scan-btn.orange:hover { opacity: 0.9; }
-
-        .scan-btn:disabled {
-            background: var(--muted);
-            cursor: not-allowed;
-        }
-
-        /* Scanning animation */
-        .scanning-bar {
-            display: none;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            background-size: 200% 100%;
-            animation: scan 1.5s linear infinite;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-        }
-
-        @keyframes scan {
-            0%   { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        /* Overall stats bar */
+        /* ── Stats Bar ────────────────────────────────────────────── */
         .stats-bar {
             background: var(--white);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             padding: 20px 24px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 0;
             margin-bottom: 24px;
             box-shadow: var(--shadow-sm);
@@ -338,9 +438,222 @@
         .stat-num  { font-size: 26px; font-weight: 800; color: var(--text); }
         .stat-desc { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
 
+        /* ── History Section ───────────────────────────────────────── */
+        .history-table-wrap {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .history-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .history-table-header h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .history-table th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+        }
+
+        .history-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .history-table tr:last-child td { border-bottom: none; }
+
+        .history-alert {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .history-alert.ok { background: var(--green-bg); color: var(--green); }
+        .history-alert.medium { background: var(--orange-bg); color: var(--orange); }
+        .history-alert.high { background: var(--red-bg); color: var(--red); }
+
+        /* ── Modal ─────────────────────────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            width: 480px;
+            max-width: 92vw;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--bg);
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover { background: var(--red-bg); color: var(--red); }
+
+        .modal-body { padding: 20px 24px; }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 13px;
+            color: var(--text);
+            background: var(--bg);
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .form-group textarea { resize: vertical; min-height: 60px; }
+
+        .form-hint {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 9px 20px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .modal-btn.cancel { background: var(--bg); color: var(--text); }
+        .modal-btn.cancel:hover { background: var(--border); }
+
+        .modal-btn.save { background: var(--primary); color: white; border-color: var(--primary); }
+        .modal-btn.save:hover { background: var(--primary-h); }
+
+        /* ── No-zone selected state ───────────────────────────────── */
+        .no-zone-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+
+        .no-zone-state i { font-size: 48px; margin-bottom: 14px; display: block; }
+        .no-zone-state h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+        .no-zone-state p { font-size: 13px; }
+
+        /* ── File drop ────────────────────────────────────────────── */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary);
+            background: var(--primary-bg);
+            color: var(--primary);
+        }
+
+        .drop-zone i { font-size: 24px; margin-bottom: 6px; display: block; }
+        .drop-zone p { font-size: 12px; font-weight: 600; }
+
         @media (max-width: 900px) {
-            .vision-grid { grid-template-columns: 1fr; }
-            .stats-bar   { grid-template-columns: 1fr 1fr; }
+            .detection-panel { grid-template-columns: 1fr; }
+            .stats-bar { grid-template-columns: repeat(3, 1fr); }
+            .zone-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -349,14 +662,14 @@
 
     <!-- Sidebar -->
     <aside class="sidebar">
-                <div class="sidebar-logo">
+        <div class="sidebar-logo">
             <div class="brand-icon"><i class="fa-solid fa-cart-shopping" style="color:white;font-size:15px"></i></div>
             <div class="sidebar-logo-text">
                 <h3>Smart Supermarket</h3>
                 <span>Admin Panel</span>
             </div>
         </div>
-                <nav class="sidebar-nav">
+        <nav class="sidebar-nav">
             <div class="nav-section-label">Main</div>
             <a href="./admin-dashboard.html" class="sidebar-link">
                 <i class="fa-solid fa-chart-line s-icon"></i> Dashboard
@@ -396,225 +709,189 @@
         </div>
     </aside>
 
-    <!-- Main -->
+    <!-- Main Content -->
     <main class="admin-main">
 
         <div class="page-header">
-            <h1>AI Vision Models</h1>
-            <p>Camera-based detection systems for smart shelf monitoring</p>
+            <h1>AI Vision — Zone Detection</h1>
+            <p>Create zones, assign product types, and run AI detection to count shelf inventory</p>
         </div>
 
         <!-- Global stats -->
-        <div class="stats-bar">
+        <div class="stats-bar" id="stats-bar">
             <div class="stat-item">
-                <div class="stat-num" id="stat-models">2</div>
-                <div class="stat-desc">Total Models</div>
+                <div class="stat-num" id="stat-zones">0</div>
+                <div class="stat-desc">Total Zones</div>
             </div>
             <div class="stat-item">
                 <div class="stat-num" id="stat-active" style="color:var(--green)">0</div>
                 <div class="stat-desc">Active</div>
             </div>
             <div class="stat-item">
+                <div class="stat-num" id="stat-products" style="color:var(--primary)">—</div>
+                <div class="stat-desc">Products Detected</div>
+            </div>
+            <div class="stat-item">
                 <div class="stat-num" id="stat-empty" style="color:var(--red)">—</div>
                 <div class="stat-desc">Empty Slots</div>
             </div>
             <div class="stat-item">
-                <div class="stat-num" id="stat-items" style="color:var(--primary)">—</div>
-                <div class="stat-desc">Items Counted</div>
+                <div class="stat-num" id="stat-models">2</div>
+                <div class="stat-desc">AI Models</div>
             </div>
         </div>
 
-        <!-- Models grid -->
-        <div class="vision-grid">
-
-            <!-- Model 1 — Empty Shelf Detection -->
-            <div class="model-card">
-                <div class="model-header">
-                    <div class="model-title-group">
-                        <div class="model-icon blue">🕳️</div>
-                        <div>
-                            <div class="model-name">Empty Shelf Detector</div>
-                            <div class="model-subtitle">
-                                <span class="status-dot offline" id="dot-1"></span>
-                                <span id="status-text-1">Offline</span>
-                            </div>
-                        </div>
-                    </div>
-                    <label class="toggle">
-                        <input type="checkbox" id="toggle-1" onchange="toggleModel(1, this.checked)">
-                        <div class="toggle-track"></div>
-                        <div class="toggle-thumb"></div>
-                    </label>
-                </div>
-
-                <!-- Camera feed -->
-                <div class="camera-feed" id="feed-1">
-                    <div class="camera-offline" id="offline-1">
-                        <div class="cam-icon">📷</div>
-                        <p>Camera offline</p>
-                        <p style="font-size:11px;margin-top:4px">Enable the model to start</p>
-                    </div>
-                    <div class="detection-canvas" id="canvas-1">
-                        <!-- Simulated shelf image background -->
-                        <div style="width:100%;height:100%;background:linear-gradient(180deg,#1a1a2e 0%,#16213e 100%);display:flex;align-items:center;justify-content:center;position:relative">
-                            <div style="color:rgba(255,255,255,0.15);font-size:13px;letter-spacing:2px;text-transform:uppercase">Live Camera Feed</div>
-                            <!-- Detection boxes -->
-                            <div class="det-box empty"    style="top:20%;left:5%;width:28%;height:55%">
-                                <div class="det-label">Empty Slot</div>
-                            </div>
-                            <div class="det-box"          style="top:20%;left:36%;width:28%;height:55%">
-                                <div class="det-label">Stocked</div>
-                            </div>
-                            <div class="det-box empty"    style="top:20%;left:67%;width:28%;height:55%">
-                                <div class="det-label">Empty Slot</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="scanning-bar" id="scan-bar-1"></div>
-                </div>
-
-                <!-- Model info -->
-                <div class="model-info">
-                    <div class="info-row">
-                        <span class="info-key">Model Type</span>
-                        <span class="info-value">YOLOv8 — Object Detection</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-key">Input</span>
-                        <span class="info-value">Camera Feed (RGB)</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-key">Accuracy</span>
-                        <span class="info-value">94.2%</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-key">Last Scan</span>
-                        <span class="info-value" id="last-scan-1">—</span>
-                    </div>
-                </div>
-
-                <!-- Results -->
-                <div class="detection-results">
-                    <div class="result-title">Detection Results</div>
-                    <div id="results-1">
-                        <div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">
-                            Enable model to see results
-                        </div>
-                    </div>
-                    <button class="scan-btn blue" id="btn-1" onclick="runScan(1)" disabled>
-                        Run Detection
-                    </button>
-                </div>
-            </div>
-
-            <!-- Model 2 — Product Counter -->
-            <div class="model-card">
-                <div class="model-header">
-                    <div class="model-title-group">
-                        <div class="model-icon orange">🔢</div>
-                        <div>
-                            <div class="model-name">Product Counter</div>
-                            <div class="model-subtitle">
-                                <span class="status-dot offline" id="dot-2"></span>
-                                <span id="status-text-2">Offline</span>
-                            </div>
-                        </div>
-                    </div>
-                    <label class="toggle">
-                        <input type="checkbox" id="toggle-2" onchange="toggleModel(2, this.checked)">
-                        <div class="toggle-track"></div>
-                        <div class="toggle-thumb"></div>
-                    </label>
-                </div>
-
-                <!-- Camera feed -->
-                <div class="camera-feed" id="feed-2">
-                    <div class="camera-offline" id="offline-2">
-                        <div class="cam-icon">📷</div>
-                        <p>Camera offline</p>
-                        <p style="font-size:11px;margin-top:4px">Enable the model to start</p>
-                    </div>
-                    <div class="detection-canvas" id="canvas-2">
-                        <div style="width:100%;height:100%;background:linear-gradient(180deg,#0d1b2a 0%,#1b2838 100%);display:flex;align-items:center;justify-content:center;position:relative">
-                            <div style="color:rgba(255,255,255,0.15);font-size:13px;letter-spacing:2px;text-transform:uppercase">Live Camera Feed</div>
-                            <!-- Product detection boxes -->
-                            <div class="det-box" style="top:15%;left:8%;width:18%;height:35%;border-color:#4f8ef7">
-                                <div class="det-label" style="background:#4f8ef7">Milk x3</div>
-                            </div>
-                            <div class="det-box" style="top:15%;left:30%;width:18%;height:35%;border-color:#4f8ef7">
-                                <div class="det-label" style="background:#4f8ef7">Juice x2</div>
-                            </div>
-                            <div class="det-box" style="top:55%;left:8%;width:18%;height:35%;border-color:#4f8ef7">
-                                <div class="det-label" style="background:#4f8ef7">Bread x5</div>
-                            </div>
-                            <div class="det-box" style="top:55%;left:30%;width:18%;height:35%;border-color:#4f8ef7">
-                                <div class="det-label" style="background:#4f8ef7">Cheese x1</div>
-                            </div>
-                            <div class="det-box" style="top:15%;left:55%;width:38%;height:75%;border-color:#eab308">
-                                <div class="det-label" style="background:#eab308;color:#000">Total: 11 items</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="scanning-bar" id="scan-bar-2" style="background:linear-gradient(90deg,transparent,var(--orange),transparent)"></div>
-                </div>
-
-                <!-- Model info -->
-                <div class="model-info">
-                    <div class="info-row">
-                        <span class="info-key">Model Type</span>
-                        <span class="info-value">YOLOv8 — Instance Counting</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-key">Input</span>
-                        <span class="info-value">Camera Feed (RGB)</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-key">Accuracy</span>
-                        <span class="info-value">91.8%</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-key">Last Scan</span>
-                        <span class="info-value" id="last-scan-2">—</span>
-                    </div>
-                </div>
-
-                <!-- Results -->
-                <div class="detection-results">
-                    <div class="result-title">Detection Results</div>
-                    <div id="results-2">
-                        <div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">
-                            Enable model to see results
-                        </div>
-                    </div>
-                    <button class="scan-btn orange" id="btn-2" onclick="runScan(2)" disabled>
-                        🔢 Run Count
-                    </button>
-                </div>
-            </div>
-
+        <!-- Zone Grid -->
+        <div class="zone-section-title"><i class="fa-solid fa-location-dot" style="margin-right:6px"></i> Store Zones</div>
+        <div class="zone-grid" id="zone-grid">
+            <!-- Dynamically populated -->
         </div>
 
-        <!-- Integration note -->
-        <div class="card" style="border-left:4px solid var(--primary)">
-            <div class="flex gap-12" style="align-items:flex-start">
-                <span style="font-size:24px">🔗</span>
-                <div>
-                    <div style="font-weight:700;font-size:15px;margin-bottom:6px">Model Integration</div>
-                    <p style="font-size:13px;color:var(--text-2);line-height:1.7;margin:0">
-                        These models are designed to connect to real camera feeds via the backend API.
-                        Once your trained models are ready, integrate them by calling
-                        <code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:12px;color:var(--primary)">POST /api/vision/detect</code>
-                        with the camera frame. The results will update automatically in this dashboard.
-                    </p>
+        <!-- Detection Panel -->
+        <div class="zone-section-title"><i class="fa-solid fa-magnifying-glass" style="margin-right:6px"></i> Detection Dashboard</div>
+        <div class="detection-panel" id="detection-panel">
+            <!-- Camera / Image Area -->
+            <div class="camera-area">
+                <div class="camera-toolbar" id="camera-toolbar">
+                    <div class="camera-toolbar-left">
+                        <i class="fa-solid fa-video" style="color:var(--primary)"></i>
+                        <div>
+                            <div class="camera-toolbar-title" id="cam-zone-name">No Zone Selected</div>
+                            <div class="camera-toolbar-zone" id="cam-zone-products">Select a zone to start</div>
+                        </div>
+                    </div>
+                    <div class="camera-toolbar-actions">
+                        <label class="cam-btn" id="btn-upload" style="display:none">
+                            <i class="fa-solid fa-upload"></i> Upload Image
+                            <input type="file" accept="image/*" id="file-input" style="display:none">
+                        </label>
+                        <button class="cam-btn" id="btn-webcam" style="display:none" onclick="toggleWebcam()">
+                            <i class="fa-solid fa-camera"></i> <span id="webcam-text">Start Camera</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Camera URL input bar (hidden until Start Camera is clicked) -->
+                <div id="camera-url-bar" style="display:none;padding:8px 16px;background:var(--bg);border-bottom:1px solid var(--border);align-items:center;gap:10px">
+                    <div style="display:flex;align-items:center;gap:8px;flex:1">
+                        <i class="fa-solid fa-link" style="color:var(--muted);font-size:12px;flex-shrink:0"></i>
+                        <input type="text" id="camera-url-input" class="form-control" 
+                            placeholder="Paste any video URL (YouTube, webcam site, IP camera...)" 
+                            style="padding:7px 12px;font-size:13px;flex:1">
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="connectCamera()" id="btn-connect-camera">
+                        <i class="fa-solid fa-plug"></i> Connect
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="useLocalWebcam()">
+                        <i class="fa-solid fa-desktop"></i> Local Webcam
+                    </button>
+                </div>
+                <div class="camera-viewport" id="camera-viewport">
+                    <div class="camera-placeholder" id="cam-placeholder">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <p>Select a zone from above to begin</p>
+                        <p class="hint">You can upload an image or connect a camera via URL/IP</p>
+                    </div>
+                    <video id="webcam-video" autoplay playsinline style="display:none"></video>
+                    <img id="uploaded-img" style="display:none">
+                    <img id="camera-stream-img" style="display:none;width:100%;height:100%;object-fit:contain">
+                    <canvas id="detection-canvas" class="detection-overlay" style="display:none"></canvas>
+                    <div class="scanning-overlay" id="scanning-overlay">
+                        <div style="text-align:center">
+                            <div class="scanning-spinner"></div>
+                            <p style="color:white;font-size:13px;margin-top:12px;font-weight:600">Running YOLO Detection...</p>
+                        </div>
+                    </div>
+                    <!-- Detection Status Bar -->
+                    <div id="detection-status-bar" style="display:none;position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);padding:6px 14px;display:none;align-items:center;justify-content:space-between;font-size:11px;color:white;z-index:20;backdrop-filter:blur(4px)">
+                        <span id="detect-status-text"><i class="fa-solid fa-circle" style="color:#16a34a;font-size:6px;margin-right:6px"></i>Streaming</span>
+                        <span id="detect-status-stats" style="opacity:0.7">Frames: 0 | Detections: 0</span>
+                    </div>
                 </div>
             </div>
+
+            <!-- Results Panel -->
+            <div class="results-panel">
+                <div class="results-header">
+                    <i class="fa-solid fa-chart-bar" style="margin-right:8px;color:var(--primary)"></i>
+                    Detection Results
+                </div>
+                <div class="results-body" id="results-body">
+                    <div class="result-empty-state">
+                        <i class="fa-solid fa-microscope"></i>
+                        <p>No detection results yet</p>
+                        <p style="font-size:11px;margin-top:4px;opacity:0.7">Select a zone and run detection</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detection History -->
+        <div class="zone-section-title" id="history-title" style="display:none"><i class="fa-solid fa-chart-column" style="margin-right:6px"></i> Detection History</div>
+        <div class="history-table-wrap" id="history-wrap" style="display:none">
+            <div class="history-table-header">
+                <h3 id="history-zone-name">Zone History</h3>
+                <button class="cam-btn" onclick="refreshHistory()">
+                    <i class="fa-solid fa-rotate"></i> Refresh
+                </button>
+            </div>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Products</th>
+                        <th>Empty Slots</th>
+                        <th>Alert</th>
+                    </tr>
+                </thead>
+                <tbody id="history-tbody">
+                </tbody>
+            </table>
         </div>
 
     </main>
 </div>
 
+<!-- Zone Modal -->
+<div class="modal-overlay" id="zone-modal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="modal-title">Add New Zone</h3>
+            <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-zone-id">
+            <div class="form-group">
+                <label>Zone Name *</label>
+                <input type="text" id="zone-name" placeholder="e.g. Dairy Zone">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="zone-desc" placeholder="Describe what products this zone contains..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Baseline Capacity *</label>
+                <input type="number" id="zone-baseline" placeholder="200" value="0" min="0">
+                <div class="form-hint">Max number of products this zone can hold when fully stocked.</div>
+            </div>
+            <div class="form-group">
+                <label>Camera Source</label>
+                <input type="text" id="zone-camera" placeholder="0" value="0">
+                <div class="form-hint">Use "0" for default webcam or enter an RTSP URL</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+            <button class="modal-btn save" onclick="saveZone()">Save Zone</button>
+        </div>
+    </div>
+</div>
+
 <script type="module">
-    import { requireAdmin } from '../js/api.js';
+    import {
+        requireAdmin, getZones, createZone, updateZone, deleteZone,
+        toggleZone, runDetection as apiRunDetection, runDetectionBase64,
+        getZoneLogs, getVisionSummary
+    } from '../js/api.js';
 
     const user = requireAdmin();
     if (!user) throw new Error("Not admin");
@@ -627,113 +904,747 @@
         window.location.href = "./login.html";
     };
 
-    let activeModels = 0;
+    // ── State ────────────────────────────────────────────────────
+    let zones = [];
+    let selectedZone = null;
+    let webcamStream = null;
+    let currentImageFile = null;
+    let webcamInterval = null;
+    let isDetecting = false;
 
-    // ── Toggle model on/off ───────────────────────────────────────
-    window.toggleModel = function(modelId, isOn) {
-        const dot        = document.getElementById("dot-" + modelId);
-        const statusText = document.getElementById("status-text-" + modelId);
-        const offline    = document.getElementById("offline-" + modelId);
-        const canvas     = document.getElementById("canvas-" + modelId);
-        const scanBar    = document.getElementById("scan-bar-" + modelId);
-        const btn        = document.getElementById("btn-" + modelId);
+    // ── Load zones ───────────────────────────────────────────────
+    async function loadZones() {
+        try {
+            const data = await getVisionSummary();
+            zones = data.zones || [];
+            renderZones();
+            updateStats(data);
+        } catch (e) {
+            console.error("Failed to load zones:", e);
+            zones = [];
+            renderZones();
+        }
+    }
 
-        if (isOn) {
-            // Simulate camera starting
-            dot.className        = "status-dot offline";
-            statusText.textContent = "Starting...";
+    function updateStats(data) {
+        document.getElementById("stat-zones").textContent    = data.total_zones || 0;
+        document.getElementById("stat-active").textContent   = data.active_zones || 0;
+        document.getElementById("stat-products").textContent = data.total_products || "—";
+        document.getElementById("stat-empty").textContent    = data.total_empty || "—";
+    }
 
-            setTimeout(() => {
-                dot.className          = "status-dot online";
-                statusText.textContent = "Online";
-                offline.style.display  = "none";
-                canvas.style.display   = "block";
-                scanBar.style.display  = "block";
-                btn.disabled           = false;
-                activeModels++;
-                document.getElementById("stat-active").textContent = activeModels;
-            }, 1500);
+    function renderZones() {
+        const grid = document.getElementById("zone-grid");
+        grid.innerHTML = "";
 
-        } else {
-            dot.className          = "status-dot offline";
-            statusText.textContent = "Offline";
-            offline.style.display  = "block";
-            canvas.style.display   = "none";
-            scanBar.style.display  = "none";
-            btn.disabled           = true;
-            activeModels           = Math.max(0, activeModels - 1);
-            document.getElementById("stat-active").textContent = activeModels;
+        zones.forEach(z => {
+            const card = document.createElement("div");
+            card.className = `zone-card ${selectedZone?.id === z.id ? 'selected' : ''}`;
+            card.onclick = () => selectZone(z);
 
-            document.getElementById("results-" + modelId).innerHTML = `
-                <div style="text-align:center;padding:16px;color:var(--muted);font-size:13px">
-                    Enable model to see results
-                </div>`;
+            const pct = z.stock_percentage != null ? z.stock_percentage : 100;
+            const barColor = pct >= 60 ? '#16a34a' : pct >= 40 ? '#ea580c' : '#dc2626';
+            const baseline = z.baseline_capacity || 0;
+
+            card.innerHTML = `
+                <div class="zone-card-header">
+                    <div class="zone-card-name">${z.name}</div>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <span class="zone-badge ${z.is_active ? 'active' : 'inactive'}">${z.is_active ? 'Active' : 'Inactive'}</span>
+                        <div class="zone-actions">
+                            <button class="zone-action-btn" onclick="event.stopPropagation();editZone(${z.id})" title="Edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="zone-action-btn danger" onclick="event.stopPropagation();removeZone(${z.id})" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="zone-card-desc">${z.description || 'No description'}</div>
+                ${baseline > 0 ? `
+                <div style="margin:8px 0 10px">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+                        <span style="font-size:13px;font-weight:800;color:${barColor}">${pct}% stocked</span>
+                        <span style="font-size:10px;color:var(--muted)">${z.last_detected_count} / ${baseline}</span>
+                    </div>
+                    <div style="height:5px;background:#e5e7eb;border-radius:3px;overflow:hidden">
+                        <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;transition:width 0.5s"></div>
+                    </div>
+                </div>` : ''}
+                <div class="zone-stats-row">
+                    <div class="zone-stat">
+                        <div class="zone-stat-num" style="color:var(--primary)">${z.last_detected_count}</div>
+                        <div class="zone-stat-label">Products</div>
+                    </div>
+                    <div class="zone-stat">
+                        <div class="zone-stat-num" style="color:var(--red)">${z.empty_slots}</div>
+                        <div class="zone-stat-label">Empty</div>
+                    </div>
+                    <div class="zone-stat">
+                        <div class="zone-stat-num" style="color:#6b7280">${baseline || '\u2014'}</div>
+                        <div class="zone-stat-label">Baseline</div>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // Add zone button
+        const addCard = document.createElement("div");
+        addCard.className = "zone-card add-zone";
+        addCard.onclick = () => openAddModal();
+        addCard.innerHTML = `
+            <i class="fa-solid fa-plus"></i>
+            <span>Add New Zone</span>
+        `;
+        grid.appendChild(addCard);
+    }
+
+    // ── Select Zone ──────────────────────────────────────────────
+    function selectZone(zone) {
+        selectedZone = zone;
+        renderZones();
+
+        // Update camera toolbar
+        document.getElementById("cam-zone-name").textContent = zone.name;
+        document.getElementById("cam-zone-products").textContent =
+            `Capacity: ${zone.baseline_capacity || '—'}`;
+
+        // Show buttons
+        document.getElementById("btn-upload").style.display = "flex";
+        document.getElementById("btn-webcam").style.display = "flex";
+
+        // Show placeholder with zone info
+        document.getElementById("cam-placeholder").innerHTML = `
+            <i class="fa-solid fa-camera"></i>
+            <p>Zone: <strong>${zone.name}</strong></p>
+            <p class="hint">Upload an image or connect a camera — detection runs automatically</p>
+        `;
+        document.getElementById("cam-placeholder").style.display = "block";
+        document.getElementById("uploaded-img").style.display = "none";
+        document.getElementById("detection-canvas").style.display = "none";
+
+        // Reset detection state
+        currentImageFile = null;
+
+        // Load history
+        loadHistory(zone.id);
+    }
+
+    window.selectZone = selectZone;
+
+    // ── Camera toggle — shows/hides the URL bar ─────────────────
+    let cameraUrlBarVisible = false;
+    let cameraStreamInterval = null;
+
+    window.toggleWebcam = function() {
+        const urlBar = document.getElementById("camera-url-bar");
+        const btnText = document.getElementById("webcam-text");
+
+        // If a stream is running (webcam or IP), stop everything
+        if (webcamStream || cameraStreamInterval) {
+            stopAllCameraSources();
+            urlBar.style.display = "none";
+            cameraUrlBarVisible = false;
+            btnText.textContent = "Start Camera";
+            return;
+        }
+
+        // Toggle the URL bar visibility
+        cameraUrlBarVisible = !cameraUrlBarVisible;
+        urlBar.style.display = cameraUrlBarVisible ? "flex" : "none";
+        btnText.textContent = cameraUrlBarVisible ? "Cancel" : "Start Camera";
+
+        // Pre-fill camera source from zone if available
+        if (cameraUrlBarVisible && selectedZone?.camera_source) {
+            document.getElementById("camera-url-input").value = selectedZone.camera_source;
         }
     };
 
-    // ── Run detection simulation ──────────────────────────────────
-    window.runScan = function(modelId) {
-        const btn      = document.getElementById("btn-" + modelId);
-        const results  = document.getElementById("results-" + modelId);
-        const lastScan = document.getElementById("last-scan-" + modelId);
+    function stopAllCameraSources() {
+        const video = document.getElementById("webcam-video");
+        const placeholder = document.getElementById("cam-placeholder");
+        const canvas = document.getElementById("detection-canvas");
+        const streamImg = document.getElementById("camera-stream-img");
+        const btnText = document.getElementById("webcam-text");
 
-        btn.disabled       = true;
-        btn.textContent    = "Scanning...";
-        results.innerHTML  = '<div style="text-align:center;padding:16px"><span class="spinner"></span></div>';
+        // Stop webcam
+        if (webcamInterval) { clearInterval(webcamInterval); webcamInterval = null; }
+        if (webcamStream) {
+            webcamStream.getTracks().forEach(t => t.stop());
+            webcamStream = null;
+        }
+        video.style.display = "none";
 
-        setTimeout(() => {
-            const now = new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-            lastScan.textContent = now;
+        // Stop IP camera stream + frame polling
+        if (cameraStreamInterval) {
+            clearInterval(cameraStreamInterval);
+            cameraStreamInterval = null;
+        }
+        if (typeof framePollingInterval !== 'undefined' && framePollingInterval) {
+            clearInterval(framePollingInterval);
+            framePollingInterval = null;
+        }
+        // Tell backend to stop camera capture
+        fetch("/api/vision/camera-stop", { method: "POST" }).catch(() => {});
 
-            if (modelId === 1) {
-                // Empty shelf detection results
-                const emptyCount = Math.floor(Math.random() * 3) + 1;
-                const stockedCount = 6 - emptyCount;
+        if (streamImg.src && streamImg.src.startsWith("blob:")) {
+            URL.revokeObjectURL(streamImg.src);
+        }
+        streamImg.style.display = "none";
 
-                results.innerHTML = `
-                    <div class="result-item empty">
-                        <span>Empty Slots Detected</span>
-                        <span class="result-count">${emptyCount}</span>
-                    </div>
-                    <div class="result-item detected">
-                        <span>Stocked Slots</span>
-                        <span class="result-count">${stockedCount}</span>
-                    </div>
-                    <div class="result-item ${emptyCount > 1 ? 'empty' : 'detected'}">
-                        <span>Alert Level</span>
-                        <span class="result-count">${emptyCount > 1 ? 'High' : 'Low'}</span>
-                    </div>`;
+        placeholder.style.display = "block";
+        canvas.style.display = "none";
+        btnText.textContent = "Start Camera";
+        currentImageFile = null;
+    }
 
-                document.getElementById("stat-empty").textContent = emptyCount;
+    // ── Connect to video source (via backend OpenCV + yt-dlp) ──────
+    window.connectCamera = function() {
+        let url = document.getElementById("camera-url-input").value.trim();
+        if (!url) { alert("Please enter a video URL."); return; }
 
-            } else {
-                // Product counting results
-                const products = [
-                    { name: "Milk",   count: Math.floor(Math.random() * 5) + 1 },
-                    { name: "Juice",  count: Math.floor(Math.random() * 4) + 1 },
-                    { name: "Bread",  count: Math.floor(Math.random() * 6) + 1 },
-                    { name: "Cheese", count: Math.floor(Math.random() * 3) + 1 },
-                ];
-                const total = products.reduce((s, p) => s + p.count, 0);
+        // Auto-add https:// if no scheme
+        if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("rtsp://")) {
+            url = "https://" + url;
+        }
 
-                results.innerHTML = products.map(p => `
-                    <div class="result-item counting">
-                        <span>${p.name}</span>
-                        <span class="result-count">${p.count} units</span>
-                    </div>`).join("") + `
-                    <div class="result-item detected" style="margin-top:8px">
-                        <span><strong>Total Items</strong></span>
-                        <span class="result-count">${total}</span>
-                    </div>`;
+        const placeholder = document.getElementById("cam-placeholder");
+        const video = document.getElementById("webcam-video");
+        const streamImg = document.getElementById("camera-stream-img");
+        const canvas = document.getElementById("detection-canvas");
+        const urlBar = document.getElementById("camera-url-bar");
+        const btnText = document.getElementById("webcam-text");
+        const connectBtn = document.getElementById("btn-connect-camera");
 
-                document.getElementById("stat-items").textContent = total;
+        // Stop any existing streams
+        stopAllCameraSources();
+
+        // Show connecting state
+        connectBtn.disabled = true;
+        connectBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Connecting...';
+        placeholder.innerHTML = `
+            <div style="text-align:center">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size:32px;color:var(--primary);margin-bottom:12px"></i>
+                <p style="font-size:13px;color:var(--text-2);font-weight:600">Connecting to video source...</p>
+                <p class="hint" style="word-break:break-all;max-width:400px;margin:4px auto 0">${url}</p>
+                <p class="hint" style="margin-top:8px">This may take a few seconds for YouTube/webcam URLs</p>
+            </div>
+        `;
+        placeholder.style.display = "block";
+
+        // Call backend to start the camera session
+        fetch("/api/vision/camera-start", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: url })
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            connectBtn.disabled = false;
+            connectBtn.innerHTML = '<i class="fa-solid fa-plug"></i> Connect';
+
+            if (data.error) {
+                throw new Error(data.error);
             }
 
-            btn.disabled    = false;
-            btn.textContent = modelId === 1 ? "Run Detection" : "🔢 Run Count";
+            // Success — stream started on backend
+            urlBar.style.display = "none";
+            cameraUrlBarVisible = false;
+            btnText.textContent = "Stop Camera";
+            video.style.display = "none";
+            canvas.style.display = "none";
 
-        }, 2500);
+            // Show resolution info
+            placeholder.innerHTML = `
+                <div style="text-align:center">
+                    <i class="fa-solid fa-circle-check" style="font-size:28px;color:#16a34a;margin-bottom:8px"></i>
+                    <p style="font-size:13px;font-weight:600;color:var(--text-2)">Connected - ${data.resolution || '?'} @ ${data.fps || '?'} FPS</p>
+                    <p class="hint">Loading video feed...</p>
+                </div>
+            `;
+
+            // Start polling for frames
+            startFramePolling();
+        })
+        .catch(err => {
+            connectBtn.disabled = false;
+            connectBtn.innerHTML = '<i class="fa-solid fa-plug"></i> Connect';
+            placeholder.innerHTML = `
+                <div style="text-align:center">
+                    <i class="fa-solid fa-circle-xmark" style="font-size:28px;color:var(--red);margin-bottom:8px"></i>
+                    <p style="font-size:13px;font-weight:600;color:var(--red)">Connection Failed</p>
+                    <p class="hint" style="max-width:350px;margin:4px auto">${err.message}</p>
+                </div>
+            `;
+        });
     };
+
+    // Poll the backend for video frames
+    let framePollingInterval = null;
+    let detectionCounter = 0;
+
+    function startFramePolling() {
+        const streamImg = document.getElementById("camera-stream-img");
+        const placeholder = document.getElementById("cam-placeholder");
+        const statusBar = document.getElementById("detection-status-bar");
+        let streamFrameCount = 0;
+        let lastDetectionTotal = 0;
+        statusBar.style.display = "flex";
+
+        // Fetch frames at ~5 fps from backend
+        framePollingInterval = setInterval(() => {
+            fetch(`/api/vision/camera-frame?t=${Date.now()}`)
+                .then(resp => {
+                    if (!resp.ok) throw new Error("No frame");
+                    return resp.blob();
+                })
+                .then(blob => {
+                    if (streamImg.src && streamImg.src.startsWith("blob:")) {
+                        URL.revokeObjectURL(streamImg.src);
+                    }
+                    streamImg.src = URL.createObjectURL(blob);
+                    streamImg.style.display = "block";
+                    placeholder.style.display = "none";
+
+                    // Update status bar
+                    streamFrameCount++;
+                    document.getElementById("detect-status-stats").textContent =
+                        `Frames: ${streamFrameCount} | Last detect: ${lastDetectionTotal} objects`;
+
+                    // Run detection every 75th frame poll (~every 15s)
+                    detectionCounter++;
+                    if (detectionCounter >= 75 && !isDetecting) {
+                        detectionCounter = 0;
+                        document.getElementById("detect-status-text").innerHTML =
+                            '<i class="fa-solid fa-spinner fa-spin" style="font-size:10px;margin-right:6px;color:#fbbf24"></i>Analyzing...';
+                        autoDetectFromStreamImg().then(() => {
+                            document.getElementById("detect-status-text").innerHTML =
+                                '<i class="fa-solid fa-circle" style="color:#16a34a;font-size:6px;margin-right:6px"></i>Streaming';
+                        });
+                    }
+                })
+                .catch(() => {
+                    // Check if stream is still active
+                    fetch("/api/vision/camera-status")
+                        .then(r => r.json())
+                        .then(status => {
+                            if (!status.active && status.error) {
+                                stopFramePolling();
+                                placeholder.innerHTML = `
+                                    <div style="text-align:center">
+                                        <i class="fa-solid fa-circle-exclamation" style="font-size:28px;color:var(--red);margin-bottom:8px"></i>
+                                        <p style="font-size:13px;font-weight:600">${status.error}</p>
+                                        <p class="hint">Click Start Camera to reconnect</p>
+                                    </div>
+                                `;
+                                placeholder.style.display = "block";
+                                streamImg.style.display = "none";
+                                document.getElementById("webcam-text").textContent = "Start Camera";
+                            }
+                        });
+                });
+        }, 200);  // Poll every 200ms for smooth video
+
+        // Store in cameraStreamInterval for cleanup
+        cameraStreamInterval = framePollingInterval;
+    }
+
+    function stopFramePolling() {
+        if (framePollingInterval) {
+            clearInterval(framePollingInterval);
+            framePollingInterval = null;
+        }
+        detectionCounter = 0;
+        document.getElementById("detection-status-bar").style.display = "none";
+        // Tell backend to stop the capture
+        fetch("/api/vision/camera-stop", { method: "POST" }).catch(() => {});
+    }
+
+    async function autoDetectFromStreamImg() {
+        if (!selectedZone || isDetecting) return;
+
+        const streamImg = document.getElementById("camera-stream-img");
+        if (!streamImg.naturalWidth) return;
+
+        // Capture frame from the stream image
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = streamImg.naturalWidth;
+        tempCanvas.height = streamImg.naturalHeight;
+        tempCanvas.getContext("2d").drawImage(streamImg, 0, 0);
+
+        tempCanvas.toBlob(async (blob) => {
+            if (!blob) return;
+            currentImageFile = new File([blob], "camera_frame.jpg", { type: "image/jpeg" });
+            await autoDetect();
+        }, "image/jpeg", 0.85);
+    }
+
+    // ── Use Local Webcam ─────────────────────────────────────────
+    window.useLocalWebcam = async function() {
+        const video = document.getElementById("webcam-video");
+        const placeholder = document.getElementById("cam-placeholder");
+        const btnText = document.getElementById("webcam-text");
+        const img = document.getElementById("uploaded-img");
+        const canvas = document.getElementById("detection-canvas");
+        const urlBar = document.getElementById("camera-url-bar");
+        const streamImg = document.getElementById("camera-stream-img");
+
+        // Stop any existing streams
+        stopAllCameraSources();
+
+        try {
+            webcamStream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 640, height: 480 }
+            });
+            video.srcObject = webcamStream;
+            video.style.display = "block";
+            placeholder.style.display = "none";
+            img.style.display = "none";
+            streamImg.style.display = "none";
+            canvas.style.display = "none";
+            urlBar.style.display = "none";
+            cameraUrlBarVisible = false;
+            btnText.textContent = "Stop Camera";
+
+            // Auto-detect once video is ready, then every 15s
+            video.onloadeddata = () => {
+                autoDetect();
+                webcamInterval = setInterval(() => {
+                    if (webcamStream && !isDetecting) autoDetect();
+                }, 15000);
+            };
+        } catch (e) {
+            alert("Could not access local webcam: " + e.message);
+        }
+    };
+
+    // ── File Upload (auto-triggers detection) ────────────────────
+    document.getElementById("file-input").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Stop any active camera sources FIRST
+        stopAllCameraSources();
+        document.getElementById("camera-stream-img").style.display = "none";
+
+        // Now set currentImageFile so it doesn't get cleared by stopAllCameraSources
+        currentImageFile = file;
+
+        const img = document.getElementById("uploaded-img");
+        const placeholder = document.getElementById("cam-placeholder");
+        const video = document.getElementById("webcam-video");
+        const canvas = document.getElementById("detection-canvas");
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            img.src = ev.target.result;
+            img.style.display = "block";
+            placeholder.style.display = "none";
+            canvas.style.display = "none";
+            // Auto-trigger detection immediately
+            autoDetect();
+        };
+        reader.readAsDataURL(file);
+        this.value = ""; // reset so same file can be re-selected
+    });
+
+    // ── Auto Detection (runs automatically, no button needed) ────
+    async function autoDetect() {
+        if (!selectedZone || isDetecting) return;
+        isDetecting = true;
+
+        const overlay = document.getElementById("scanning-overlay");
+        overlay.classList.add("active");
+
+        try {
+            let result;
+
+            if (webcamStream) {
+                // Capture frame from webcam
+                const video = document.getElementById("webcam-video");
+                if (video.videoWidth === 0) { isDetecting = false; overlay.classList.remove("active"); return; }
+                const tempCanvas = document.createElement("canvas");
+                tempCanvas.width = video.videoWidth;
+                tempCanvas.height = video.videoHeight;
+                tempCanvas.getContext("2d").drawImage(video, 0, 0);
+                const base64 = tempCanvas.toDataURL("image/jpeg", 0.9);
+                result = await runDetectionBase64(selectedZone.id, base64);
+            } else if (currentImageFile) {
+                result = await apiRunDetection(selectedZone.id, currentImageFile);
+            } else {
+                isDetecting = false;
+                overlay.classList.remove("active");
+                return;
+            }
+
+            if (result.error) {
+                console.error("Detection error:", result.error);
+            } else {
+                displayResults(result);
+                drawDetections(result);
+                await loadZones();
+                if (selectedZone) loadHistory(selectedZone.id);
+            }
+        } catch (e) {
+            console.error("Detection failed:", e);
+        } finally {
+            overlay.classList.remove("active");
+            isDetecting = false;
+        }
+    }
+
+    window.runDetection = autoDetect;
+
+    // ── Display Detection Results ────────────────────────────────
+    function displayResults(result) {
+        const body = document.getElementById("results-body");
+
+        const alertIcon = {
+            ok: "fa-circle-check",
+            medium: "fa-triangle-exclamation",
+            high: "fa-circle-exclamation",
+            low: "fa-info-circle"
+        };
+
+        const alertText = {
+            ok: "Stock level healthy (≥60%)",
+            medium: "Stock declining (40–59%) — monitor closely",
+            high: "CRITICAL — Stock below 40%!",
+            low: "Minor issue detected"
+        };
+
+        let detectionsHTML = "";
+        if (result.detections && result.detections.length > 0) {
+            const products = result.detections.filter(d => d.type === "product");
+            const empties = result.detections.filter(d => d.type === "empty");
+
+            if (products.length > 0) {
+                detectionsHTML += `<div class="detection-list-title">Products Found (${products.length})</div>`;
+                products.forEach(d => {
+                    detectionsHTML += `
+                        <div class="detection-item product">
+                            <span><i class="fa-solid fa-box" style="margin-right:6px"></i>${d.label}</span>
+                            <span class="detection-conf">${(d.confidence * 100).toFixed(1)}%</span>
+                        </div>`;
+                });
+            }
+
+            if (empties.length > 0) {
+                detectionsHTML += `<div class="detection-list-title" style="margin-top:12px">Empty Slots (${empties.length})</div>`;
+                empties.forEach(d => {
+                    detectionsHTML += `
+                        <div class="detection-item empty">
+                            <span><i class="fa-solid fa-box-open" style="margin-right:6px"></i>${d.label}</span>
+                            <span class="detection-conf">${(d.confidence * 100).toFixed(1)}%</span>
+                        </div>`;
+                });
+            }
+        }
+
+        const level = result.alert_level || "ok";
+        const pct = result.stock_percentage != null ? result.stock_percentage : (result.zone?.stock_percentage ?? 100);
+        const baseline = result.baseline_capacity || result.zone?.baseline_capacity || 0;
+        const barColor = pct >= 60 ? '#16a34a' : pct >= 40 ? '#ea580c' : '#dc2626';
+
+        body.innerHTML = `
+            <div class="result-summary">
+                <div class="result-summary-card products">
+                    <div class="result-summary-num">${result.product_count}</div>
+                    <div class="result-summary-label">Products</div>
+                </div>
+                <div class="result-summary-card empty-slots">
+                    <div class="result-summary-num">${result.empty_slots}</div>
+                    <div class="result-summary-label">Empty Slots</div>
+                </div>
+            </div>
+            <!-- Stock percentage -->
+            <div style="margin-bottom:12px;padding:10px 14px;background:var(--bg);border-radius:var(--radius)">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+                    <span style="font-size:20px;font-weight:800;color:${barColor}">${pct}%</span>
+                    <span style="font-size:11px;color:var(--muted);font-weight:600">${result.product_count} / ${baseline || '—'} baseline</span>
+                </div>
+                <div style="height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden">
+                    <div style="height:100%;width:${pct}%;background:${barColor};border-radius:4px;transition:width 0.5s ease"></div>
+                </div>
+            </div>
+            <div class="alert-badge ${level}">
+                <i class="fa-solid ${alertIcon[level] || 'fa-info-circle'}"></i>
+                ${alertText[level] || level}
+            </div>
+            <div style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:14px">
+                Scanned at ${result.scanned_at || 'now'}
+            </div>
+            ${detectionsHTML}
+        `;
+    }
+
+    // ── Draw Bounding Boxes on Canvas ────────────────────────────
+    function drawDetections(result) {
+        const canvas = document.getElementById("detection-canvas");
+        const viewport = document.getElementById("camera-viewport");
+        const ctx = canvas.getContext("2d");
+
+        // Always clear canvas first
+        canvas.width = viewport.clientWidth;
+        canvas.height = viewport.clientHeight;
+        canvas.style.display = "block";
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (!result.detections || result.detections.length === 0) return;
+
+        const imgW = result.image_width || 640;
+        const imgH = result.image_height || 480;
+
+        const scaleX = canvas.width / imgW;
+        const scaleY = canvas.height / imgH;
+        const scale = Math.min(scaleX, scaleY);
+
+        const offsetX = (canvas.width - imgW * scale) / 2;
+        const offsetY = (canvas.height - imgH * scale) / 2;
+
+        result.detections.forEach(det => {
+            const [x1, y1, x2, y2] = det.bbox;
+            const sx = x1 * scale + offsetX;
+            const sy = y1 * scale + offsetY;
+            const sw = (x2 - x1) * scale;
+            const sh = (y2 - y1) * scale;
+
+            const isProduct = det.type === "product";
+            const color = isProduct ? "#4f8ef7" : "#ef4444";
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(sx, sy, sw, sh);
+
+            // Label background
+            const label = `${det.label} ${(det.confidence * 100).toFixed(0)}%`;
+            ctx.font = "bold 11px sans-serif";
+            const textW = ctx.measureText(label).width + 8;
+            ctx.fillStyle = color;
+            ctx.fillRect(sx, sy - 18, textW, 18);
+
+            // Label text
+            ctx.fillStyle = "#fff";
+            ctx.fillText(label, sx + 4, sy - 5);
+        });
+    }
+
+    // ── Zone CRUD ────────────────────────────────────────────────
+    window.openAddModal = function() {
+        document.getElementById("modal-title").textContent = "Add New Zone";
+        document.getElementById("edit-zone-id").value = "";
+        document.getElementById("zone-name").value = "";
+        document.getElementById("zone-desc").value = "";
+        document.getElementById("zone-baseline").value = "0";
+        document.getElementById("zone-camera").value = "0";
+        document.getElementById("zone-modal").classList.add("active");
+    };
+
+    window.editZone = function(id) {
+        const z = zones.find(z => z.id === id);
+        if (!z) return;
+        document.getElementById("modal-title").textContent = "Edit Zone";
+        document.getElementById("edit-zone-id").value = z.id;
+        document.getElementById("zone-name").value = z.name;
+        document.getElementById("zone-desc").value = z.description || "";
+        document.getElementById("zone-baseline").value = z.baseline_capacity || 0;
+        document.getElementById("zone-camera").value = z.camera_source || "0";
+        document.getElementById("zone-modal").classList.add("active");
+    };
+
+    window.closeModal = function() {
+        document.getElementById("zone-modal").classList.remove("active");
+    };
+
+    window.saveZone = async function() {
+        const id = document.getElementById("edit-zone-id").value;
+        const data = {
+            name: document.getElementById("zone-name").value.trim(),
+            description: document.getElementById("zone-desc").value.trim(),
+            baseline_capacity: parseInt(document.getElementById("zone-baseline").value) || 0,
+            camera_source: document.getElementById("zone-camera").value.trim() || "0",
+        };
+
+        if (!data.name) return alert("Zone name is required!");
+        if (!data.baseline_capacity || data.baseline_capacity <= 0) return alert("Baseline capacity must be greater than 0!");
+
+        try {
+            if (id) {
+                await updateZone(id, data);
+            } else {
+                await createZone(data);
+            }
+            closeModal();
+            await loadZones();
+        } catch (e) {
+            alert("Error saving zone: " + e.message);
+        }
+    };
+
+    window.removeZone = async function(id) {
+        if (!confirm("Delete this zone? This will also delete all detection history.")) return;
+        try {
+            await deleteZone(id);
+            if (selectedZone?.id === id) selectedZone = null;
+            await loadZones();
+        } catch (e) {
+            alert("Error deleting zone: " + e.message);
+        }
+    };
+
+    // ── Detection History ────────────────────────────────────────
+    async function loadHistory(zoneId) {
+        const titleEl = document.getElementById("history-title");
+        const wrap = document.getElementById("history-wrap");
+        const tbody = document.getElementById("history-tbody");
+        const nameEl = document.getElementById("history-zone-name");
+
+        titleEl.style.display = "block";
+        wrap.style.display = "block";
+
+        const zone = zones.find(z => z.id === zoneId);
+        nameEl.textContent = zone ? `${zone.name} — History` : "Zone History";
+
+        try {
+            const data = await getZoneLogs(zoneId, 15);
+            const logs = data.logs || [];
+
+            if (logs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align:center;color:var(--muted);padding:24px">
+                            No detection history yet
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = logs.map(l => `
+                <tr>
+                    <td>${l.scanned_at}</td>
+                    <td><strong style="color:var(--primary)">${l.detected_count}</strong></td>
+                    <td><strong style="color:var(--red)">${l.empty_slots}</strong></td>
+                    <td><span class="history-alert ${l.alert_level}">${l.alert_level}</span></td>
+                </tr>
+            `).join("");
+        } catch (e) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align:center;color:var(--red);padding:24px">
+                        Failed to load history
+                    </td>
+                </tr>`;
+        }
+    }
+
+    window.refreshHistory = function() {
+        if (selectedZone) loadHistory(selectedZone.id);
+    };
+
+    // ── Init ─────────────────────────────────────────────────────
+    loadZones();
 </script>
 </body>
 </html>

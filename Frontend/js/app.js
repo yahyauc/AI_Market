@@ -15,8 +15,13 @@ export function toast(message, type = "default", duration = 3200) {
     const el = document.createElement("div");
     el.className = `toast ${type}`;
 
-    const icons = { success: "✅", error: "❌", warning: "⚠️", default: "ℹ️" };
-    el.innerHTML = `<span>${icons[type] || "ℹ️"}</span> ${message}`;
+    const icons = {
+        success: '<i class="fa-solid fa-circle-check" style="color:#16a34a"></i>',
+        error:   '<i class="fa-solid fa-circle-xmark" style="color:#dc2626"></i>',
+        warning: '<i class="fa-solid fa-triangle-exclamation" style="color:#ea580c"></i>',
+        default: '<i class="fa-solid fa-circle-info" style="color:#16a34a"></i>'
+    };
+    el.innerHTML = `<span>${icons[type] || icons.default}</span> ${message}`;
 
     container.appendChild(el);
     setTimeout(() => {
@@ -99,18 +104,18 @@ export function buildNavbar(activePage = "") {
     nav.className = "navbar";
     nav.innerHTML = `
         <a href="../index.html" class="nav-brand">
-            <div class="brand-icon">🛒</div>
+            <div class="brand-icon"><i class="fa-solid fa-cart-shopping" style="color:white;font-size:14px"></i></div>
             Smart Supermarket
         </a>
         <div class="nav-links">
             <a href="${prefix}products.html" class="nav-link ${activePage === 'products' ? 'active' : ''}">Products</a>
             ${user ? `<a href="${prefix}orders.html"  class="nav-link ${activePage === 'orders'   ? 'active' : ''}">My Orders</a>` : ''}
-            ${isAdmin ? `<a href="${prefix}admin-dashboard.html" class="nav-link ${activePage === 'admin' ? 'active' : ''}">⚙️ Admin</a>` : ''}
+            ${isAdmin ? `<a href="${prefix}admin-dashboard.html" class="nav-link ${activePage === 'admin' ? 'active' : ''}"><i class="fa-solid fa-gear" style="font-size:12px;margin-right:4px"></i> Admin</a>` : ''}
         </div>
         <div class="nav-right">
             ${user
                 ? `<a href="${prefix}cart.html" class="cart-btn">
-                       🛒 Cart
+                       <i class="fa-solid fa-cart-shopping"></i> Cart
                        <span class="cart-count" id="cart-count" style="display:none">0</span>
                    </a>
                    <span style="font-size:13px;color:var(--text-2)">Hi, <strong>${user.username}</strong></span>
@@ -152,15 +157,23 @@ export function statusBadge(status) {
 }
 
 export function categoryEmoji(cat) {
+    // Returns a small FA icon class name for the category
     const map = {
-        "Dairy":   "🥛",
-        "Bakery":  "🍞",
-        "Drinks":  "🥤",
-        "Pantry":  "🫙",
-        "Fruits":  "🍎",
-        "Veggies": "🥦",
-        "Meat":    "🥩",
-        "Frozen":  "🧊"
+        "Dairy":         "fa-cow",
+        "Bakery":        "fa-bread-slice",
+        "Drinks":        "fa-mug-hot",
+        "Pantry":        "fa-jar",
+        "Fruits":        "fa-apple-whole",
+        "Vegetables":    "fa-carrot",
+        "Veggies":       "fa-carrot",
+        "Meat":          "fa-drumstick-bite",
+        "Fish":          "fa-fish",
+        "Oils":          "fa-bottle-droplet",
+        "Snacks":        "fa-cookie-bite",
+        "Frozen":        "fa-snowflake",
+        "Cleaning":      "fa-spray-can-sparkles",
+        "Personal Care": "fa-pump-soap",
     };
-    return map[cat] || "📦";
+    const icon = map[cat] || "fa-box";
+    return `<i class="fa-solid ${icon}" style="font-size:14px;color:var(--primary)"></i>`;
 }

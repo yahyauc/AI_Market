@@ -72,7 +72,7 @@
         <!-- Filters -->
         <div class="card mb-24" style="padding:14px 18px">
             <div class="flex gap-12" style="flex-wrap:wrap;align-items:center">
-                <input type="text" id="search" class="form-control" placeholder="🔍 Search..." style="max-width:240px" oninput="renderTable()">
+                <input type="text" id="search" class="form-control" placeholder="Search..." style="max-width:240px" oninput="renderTable()">
                 <select id="cat-filter" class="form-control" style="max-width:180px" onchange="renderTable()">
                     <option value="">All categories</option>
                 </select>
@@ -95,13 +95,14 @@
                             <th>ID</th>
                             <th>Name</th>
                             <th>Category</th>
+                            <th>Zone</th>
                             <th>Price</th>
                             <th>Stock</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="table-body">
-                        <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">
+                        <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">
                             <span class="spinner"></span>
                         </td></tr>
                     </tbody>
@@ -118,6 +119,7 @@
             <span class="modal-title" id="modal-title">Add Product</span>
             <button class="modal-close" onclick="closeModal()">✕</button>
         </div>
+        <div class="modal-body">
         <div id="modal-error"></div>
         <div class="form-group">
             <label class="form-label">Name *</label>
@@ -126,26 +128,34 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
             <div class="form-group">
                 <label class="form-label">Category *</label>
-                <select id="f-category" class="form-control">
+                <select id="f-category" class="form-control" onchange="onCategoryChange()">
                     <option value="">Select a category</option>
-                    <option value="Dairy">Dairy</option>
-                    <option value="Bakery">Bakery</option>
-                    <option value="Drinks">Drinks</option>
-                    <option value="Pantry">Pantry</option>
-                    <option value="Oils">Oils</option>
+                    <!-- Categories populated dynamically from products + predefined list -->
                 </select>
+                <input type="text" id="f-category-custom" class="form-control" placeholder="Enter custom category name" style="display:none;margin-top:6px">
             </div>
             <div class="form-group">
-                <label class="form-label">Price (MAD) *</label>
-                <input type="number" id="f-price" class="form-control" placeholder="0.00" min="0" step="0.01">
+                <label class="form-label">Zone *</label>
+                <select id="f-zone" class="form-control" onchange="onZoneChange()">
+                    <option value="">Select a zone</option>
+                </select>
             </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
             <div class="form-group">
-                <label class="form-label">Stock *</label>
-                <input type="number" id="f-stock" class="form-control" placeholder="0" min="0">
+                <label class="form-label">Price (MAD) *</label>
+                <input type="number" id="f-price" class="form-control" placeholder="0.00" min="0" step="0.01">
             </div>
             <div class="form-group">
+                <label class="form-label">Stock *</label>
+                <input type="number" id="f-stock" class="form-control" placeholder="0" min="0">
+                <div id="stock-capacity-hint" style="font-size:11px;color:var(--muted);margin-top:4px;display:none">
+                    <i class="fa-solid fa-info-circle" style="margin-right:3px"></i>
+                    <span id="stock-capacity-text"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
                 <label class="form-label">Product Image</label>
                 <!-- Hidden URL field -->
                 <input type="hidden" id="f-image">
@@ -153,17 +163,17 @@
                 <!-- Upload zone -->
                 <div id="upload-zone"
                     onclick="document.getElementById('f-image-file').click()"
-                    style="border:2px dashed var(--border2);border-radius:var(--radius);padding:16px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:var(--bg)">
+                    style="border:2px dashed var(--border2);border-radius:var(--radius);padding:12px;text-align:center;cursor:pointer;transition:border-color 0.2s;background:var(--bg)">
                     <div id="upload-placeholder">
-                        <div style="font-size:28px;margin-bottom:6px">📷</div>
-                        <div style="font-size:13px;font-weight:600;color:var(--text-2)">Click to upload an image</div>
-                        <div style="font-size:11px;color:var(--muted);margin-top:3px">PNG, JPG, WEBP — Max 5MB</div>
+                        <div style="font-size:22px;margin-bottom:4px"><i class="fa-solid fa-camera" style="color:var(--muted)"></i></div>
+                        <div style="font-size:12px;font-weight:600;color:var(--text-2)">Click to upload an image</div>
+                        <div style="font-size:10px;color:var(--muted);margin-top:2px">PNG, JPG, WEBP — Max 5MB</div>
                     </div>
                     <div id="upload-preview" style="display:none;position:relative">
                         <img id="img-preview-el" src="" alt="Preview"
-                            style="width:90px;height:90px;object-fit:cover;border-radius:10px;border:1px solid var(--border);">
+                            style="width:70px;height:70px;object-fit:cover;border-radius:10px;border:1px solid var(--border);">
                         <button onclick="clearImage(event)" title="Remove image"
-                            style="position:absolute;top:-8px;right:calc(50% - 53px);width:22px;height:22px;border-radius:50%;background:var(--red);color:white;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;">✕</button>
+                            style="position:absolute;top:-8px;right:calc(50% - 43px);width:22px;height:22px;border-radius:50%;background:var(--red);color:white;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;">✕</button>
                     </div>
                 </div>
 
@@ -176,15 +186,23 @@
                     </div>
                     <div style="font-size:11px;color:var(--muted);margin-top:4px">Uploading...</div>
                 </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="form-group">
+                <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+                    Description
+                    <button type="button" class="btn btn-outline btn-sm" onclick="generateDescription()" id="btn-gen-desc"
+                        style="font-size:11px;padding:3px 10px;gap:4px;display:flex;align-items:center">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="font-size:10px"></i> Auto-generate
+                    </button>
+                </label>
+                <textarea id="f-description" class="form-control" rows="2" placeholder="Short description..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Origin</label>
+                <input type="text" id="f-origin" class="form-control" placeholder="e.g. Morocco, France...">
             </div>
         </div>
-        <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea id="f-description" class="form-control" rows="2" placeholder="Short description..."></textarea>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Origin</label>
-            <input type="text" id="f-origin" class="form-control" placeholder="e.g. Morocco, France, Spain...">
         </div>
         <div class="modal-footer">
             <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
@@ -196,7 +214,7 @@
 <div class="toast-container" id="toast-container"></div>
 
 <script type="module">
-    import { getProducts, addProduct, updateProduct, deleteProduct, getCategories, requireAdmin } from '../js/api.js';
+    import { getProducts, addProduct, updateProduct, deleteProduct, getCategories, requireAdmin, getZones } from '../js/api.js';
     import { toast, formatPrice, stockBadge, categoryEmoji } from '../js/app.js';
 
     const user = requireAdmin();
@@ -211,18 +229,49 @@
     };
 
     let allProducts = [];
-    let editingId   = null;
+    let allZones    = [];
+    let editingId    = null;
+    let imageCleared = false;  // Track if user explicitly removed the image
 
     // ── Load ─────────────────────────────────────────────────────
     async function load() {
         allProducts = await getProducts();
-        const cats  = [...new Set(allProducts.map(p => p.category))].sort();
+        allZones    = await getZones();
+        const predefinedCats = ["Dairy","Bakery","Drinks","Fruits","Vegetables","Meat","Fish","Pantry","Oils","Snacks","Frozen","Cleaning","Personal Care"];
+        const productCats = [...new Set(allProducts.map(p => p.category))];
+        const allCats = [...new Set([...predefinedCats, ...productCats])].sort();
 
         const catFilter = document.getElementById("cat-filter");
-        cats.forEach(c => {
+        // Clear existing dynamic options
+        while (catFilter.options.length > 1) catFilter.remove(1);
+        allCats.forEach(c => {
             const o = document.createElement("option");
             o.value = c; o.textContent = c;
             catFilter.appendChild(o);
+        });
+
+        // Also update the modal category dropdown dynamically
+        const catSelect = document.getElementById("f-category");
+        // Keep only the first option ("Select a category") and "Other"
+        while (catSelect.options.length > 1) catSelect.remove(1);
+        allCats.forEach(c => {
+            const o = document.createElement("option");
+            o.value = c; o.textContent = c;
+            catSelect.appendChild(o);
+        });
+        // Always add "Other..." at the end
+        const otherOpt = document.createElement("option");
+        otherOpt.value = "Other"; otherOpt.textContent = "Other...";
+        catSelect.appendChild(otherOpt);
+
+        // Populate zone dropdown in modal
+        const zoneSelect = document.getElementById("f-zone");
+        while (zoneSelect.options.length > 1) zoneSelect.remove(1);
+        allZones.forEach(z => {
+            const o = document.createElement("option");
+            o.value = z.id;
+            o.textContent = `${z.name} (capacity: ${z.baseline_capacity})`;
+            zoneSelect.appendChild(o);
         });
 
         renderTable();
@@ -246,11 +295,14 @@
         const tbody = document.getElementById("table-body");
 
         if (!rows.length) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">No products found</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">No products found</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = rows.map(p => `
+        tbody.innerHTML = rows.map(p => {
+            const zone = allZones.find(z => z.id === p.zone_id);
+            const zoneName = zone ? zone.name : '<span style="color:var(--muted)">—</span>';
+            return `
             <tr>
                 <td style="color:var(--muted);font-family:var(--font-mono);font-size:13px">#${p.id}</td>
                 <td>
@@ -269,26 +321,32 @@
                     </div>
                 </td>
                 <td><span class="badge badge-blue">${p.category}</span></td>
+                <td><span class="badge" style="background:var(--bg);color:var(--text-2);font-size:11px">${zoneName}</span></td>
                 <td style="font-weight:700;color:var(--primary)">${formatPrice(p.price)}</td>
                 <td>${stockBadge(p.stock)}</td>
                 <td>
                     <div class="flex gap-8">
                         <button class="btn btn-outline btn-sm" onclick="openEdit(${p.id})">Edit</button>
-                        <button class="btn btn-sm" style="background:var(--red-bg);color:var(--red)" onclick="handleDelete(${p.id}, '${p.name.replace(/'/g,"\\'")}')">🗑</button>
+                        <button class="btn btn-sm" style="background:var(--red-bg);color:var(--red)" onclick="handleDelete(${p.id}, '${p.name.replace(/'/g,"\\'")}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </td>
             </tr>
-        `).join("");
+        `}).join("");
     };
 
     // ── Modal ─────────────────────────────────────────────────────
     window.openModal = function() {
         editingId = null;
+        imageCleared = false;
         document.getElementById("modal-title").textContent = "Add Product";
         document.getElementById("modal-save-btn").textContent = "Save Product";
-        ["f-name","f-category","f-price","f-stock","f-image","f-description","f-origin"].forEach(id => {
+        ["f-name","f-category","f-price","f-stock","f-image","f-description","f-origin","f-zone"].forEach(id => {
             document.getElementById(id).value = "";
         });
+        document.getElementById("f-category-custom").value = "";
+        document.getElementById("f-category-custom").style.display = "none";
+        document.getElementById("stock-capacity-hint").style.display = "none";
+        document.getElementById("f-stock").removeAttribute("max");
         document.getElementById("modal-error").innerHTML = "";
         document.getElementById("modal").classList.add("open");
         document.getElementById("f-name").focus();
@@ -298,17 +356,37 @@
         const p = allProducts.find(x => x.id === id);
         if (!p) return;
         editingId = id;
+        imageCleared = false;
         document.getElementById("modal-title").textContent = "Edit Product";
         document.getElementById("modal-save-btn").textContent = "Update Product";
         document.getElementById("f-name").value        = p.name;
         document.getElementById("f-category").value    = p.category || "";
+        // If category isn't in the dropdown, select "Other" and show custom input
+        const catSelect = document.getElementById("f-category");
+        const catCustom = document.getElementById("f-category-custom");
+        const knownCats = [...catSelect.options].map(o => o.value).filter(v => v && v !== 'Other');
+        if (p.category && !knownCats.includes(p.category)) {
+            catSelect.value = "Other";
+            catCustom.value = p.category;
+            catCustom.style.display = "block";
+        } else {
+            catCustom.value = "";
+            catCustom.style.display = "none";
+        }
         document.getElementById("f-price").value       = p.price;
         document.getElementById("f-stock").value       = p.stock;
         document.getElementById("f-image").value       = p.image_url || "";
         document.getElementById("f-description").value = p.description || "";
         document.getElementById("f-origin").value       = p.origin || "";
+        document.getElementById("f-zone").value         = p.zone_id || "";
         document.getElementById("modal-error").innerHTML = "";
         document.getElementById("modal").classList.add("open");
+        // Update capacity hint for selected zone
+        if (p.zone_id) onZoneChange();
+        else {
+            document.getElementById("stock-capacity-hint").style.display = "none";
+            document.getElementById("f-stock").removeAttribute("max");
+        }
     };
 
     window.closeModal = function() {
@@ -316,15 +394,33 @@
     };
 
     window.saveProduct = async function() {
+        const zoneId = document.getElementById("f-zone").value;
+        let category = document.getElementById("f-category").value.trim();
+        if (category === "Other") {
+            category = document.getElementById("f-category-custom").value.trim();
+        }
+        const imageUrl = document.getElementById("f-image").value.trim();
+
         const data = {
             name:        document.getElementById("f-name").value.trim(),
-            category:    document.getElementById("f-category").value.trim(),
+            category:    category,
             price:       parseFloat(document.getElementById("f-price").value),
             stock:       parseInt(document.getElementById("f-stock").value),
-            image_url:   document.getElementById("f-image").value.trim(),
             description: document.getElementById("f-description").value.trim(),
-            origin:      document.getElementById("f-origin").value.trim()
+            origin:      document.getElementById("f-origin").value.trim(),
+            zone_id:     zoneId ? parseInt(zoneId) : null,
         };
+
+        // Image handling:
+        // - If there's a URL, send it (new upload or existing preserved)
+        // - If user explicitly cleared the image, send empty to remove it
+        // - If editing and no image change, don't send image_url (backend keeps existing)
+        if (imageUrl) {
+            data.image_url = imageUrl;
+        } else if (imageCleared) {
+            data.image_url = "";  // User explicitly removed the image
+        }
+        // else: don't include image_url — backend will keep existing
 
         const errBox = document.getElementById("modal-error");
         errBox.innerHTML = "";
@@ -346,11 +442,12 @@
         btn.textContent = editingId ? "Update Product" : "Save Product";
 
         if (res.error) {
-            errBox.innerHTML = `<div class="alert alert-error">❌ ${res.error}</div>`;
+            errBox.innerHTML = `<div class="alert alert-error">${res.error}</div>`;
             return;
         }
 
-        toast(editingId ? "Product updated ✓" : "Product added ✓", "success");
+        imageCleared = false;
+        toast(editingId ? "Product updated" : "Product added", "success");
         closeModal();
         allProducts = await getProducts();
         renderTable();
@@ -369,6 +466,153 @@
     document.getElementById("modal").addEventListener("click", e => {
         if (e.target === document.getElementById("modal")) closeModal();
     });
+
+    // ── Category "Other" handler ────────────────────────────────
+    window.onCategoryChange = function() {
+        const val = document.getElementById("f-category").value;
+        const custom = document.getElementById("f-category-custom");
+        if (val === "Other") {
+            custom.style.display = "block";
+            custom.focus();
+        } else {
+            custom.style.display = "none";
+            custom.value = "";
+        }
+    };
+
+    // ── Zone capacity helper ────────────────────────────────────
+    window.onZoneChange = async function() {
+        const zoneId = document.getElementById("f-zone").value;
+        const hint = document.getElementById("stock-capacity-hint");
+        const hintText = document.getElementById("stock-capacity-text");
+        const stockInput = document.getElementById("f-stock");
+
+        if (!zoneId) {
+            hint.style.display = "none";
+            stockInput.removeAttribute("max");
+            return;
+        }
+
+        try {
+            const res = await fetch(`http://127.0.0.1:5000/api/zones/${zoneId}/remaining-capacity`);
+            const data = await res.json();
+
+            // If editing, add back current product's stock to remaining
+            let adjustedRemaining = data.remaining;
+            if (editingId) {
+                const currentProduct = allProducts.find(p => p.id === editingId);
+                if (currentProduct && currentProduct.zone_id === parseInt(zoneId)) {
+                    adjustedRemaining += currentProduct.stock;
+                }
+            }
+
+            stockInput.setAttribute("max", adjustedRemaining);
+            hint.style.display = "block";
+            hintText.innerHTML = `Max available: <strong>${adjustedRemaining}</strong> of ${data.baseline_capacity} (${data.used}${editingId ? ' incl. current' : ''} used)`;
+
+            if (data.baseline_capacity === 0) {
+                hintText.innerHTML = `No capacity limit set for this zone`;
+                stockInput.removeAttribute("max");
+            }
+        } catch (e) {
+            hint.style.display = "none";
+            stockInput.removeAttribute("max");
+        }
+    };
+    // ── Smart Description Generator (Groq AI + local fallback) ──
+    const GROQ_API_KEY = ""; // Add your Groq API key here (get one free at https://console.groq.com)
+
+    // Local fallback templates by category
+    const descTemplates = {
+        "Dairy":         ["Fresh and creamy {name}, sourced from quality farms. Perfect for everyday use.",
+                          "Premium {name} made with natural ingredients. Rich in calcium and nutrients."],
+        "Bakery":        ["Freshly baked {name}, made with traditional recipes. Soft and delicious.",
+                          "Artisan {name} prepared daily with premium flour. Perfect with any meal."],
+        "Drinks":        ["Refreshing {name} to quench your thirst. Serve chilled for best taste.",
+                          "Premium {name} made from natural ingredients. Great for any occasion."],
+        "Fruits":        ["Fresh and ripe {name}, hand-selected for quality. Rich in vitamins.",
+                          "Naturally sweet {name}, perfect for snacking or cooking. Farm fresh."],
+        "Vegetables":    ["Fresh {name}, locally sourced when possible. Essential for healthy meals.",
+                          "Crisp and nutritious {name}. Perfect for salads, cooking, or steaming."],
+        "Meat":          ["Premium cut {name}, carefully selected for tenderness and flavor.",
+                          "Fresh {name} from trusted suppliers. Ideal for grilling or roasting."],
+        "Fish":          ["Fresh {name} sourced daily. Rich in omega-3 fatty acids and protein.",
+                          "Premium {name}, perfect for grilling, baking, or pan-searing."],
+        "Pantry":        ["Essential {name} for your kitchen pantry. Long shelf life and great quality.",
+                          "Premium {name}, a versatile ingredient for everyday cooking."],
+        "Oils":          ["Pure {name} extracted using traditional methods. Ideal for cooking and dressing.",
+                          "Premium quality {name} with rich flavor. Perfect for all culinary needs."],
+        "Snacks":        ["Delicious {name} for anytime snacking. Perfectly seasoned and crunchy.",
+                          "Tasty {name} made with quality ingredients. Perfect on-the-go snack."],
+        "Frozen":        ["Conveniently frozen {name}, locking in freshness and flavor. Easy to prepare.",
+                          "Quality {name} flash-frozen for maximum freshness. Ready in minutes."],
+        "Cleaning":      ["Effective {name} for a spotless clean. Safe for household surfaces.",
+                          "Powerful {name} that tackles dirt and grime. Fresh scent formula."],
+        "Personal Care": ["Gentle {name} formulated for daily use. Suitable for all skin types.",
+                          "Premium {name} with a refreshing feel. Dermatologically tested."],
+    };
+    const defaultTemplates = [
+        "Premium quality {name}. A great addition to your shopping cart.",
+        "Top-grade {name} selected for freshness and value. Customer favorite.",
+    ];
+
+    function generateLocalDescription(name, category) {
+        const templates = descTemplates[category] || defaultTemplates;
+        return templates[Math.floor(Math.random() * templates.length)].replace(/\{name\}/g, name);
+    }
+
+    window.generateDescription = async function() {
+        const name = document.getElementById("f-name").value.trim();
+        let category = document.getElementById("f-category").value.trim();
+        if (category === "Other") {
+            category = document.getElementById("f-category-custom").value.trim();
+        }
+
+        if (!name) {
+            toast("Please enter a product name first", "error");
+            return;
+        }
+
+        const btn = document.getElementById("btn-gen-desc");
+        const descField = document.getElementById("f-description");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size:10px"></i> Generating...';
+
+        // Try Groq AI first
+        let aiSuccess = false;
+        try {
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${GROQ_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile",
+                    messages: [
+                        { role: "system", content: "You generate short supermarket product descriptions. Reply with ONLY the description text, 1 sentence, max 100 characters. No quotes, no formatting." },
+                        { role: "user", content: `Product: ${name}${category ? ', Category: ' + category : ''}` }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 60,
+                })
+            });
+            const data = await res.json();
+            if (data.choices?.[0]?.message?.content) {
+                descField.value = data.choices[0].message.content.trim().replace(/^["']|["']$/g, '');
+                aiSuccess = true;
+            }
+        } catch (e) { /* Groq unavailable, use local fallback */ }
+
+        // Fallback to local template
+        if (!aiSuccess) {
+            descField.value = generateLocalDescription(name, category);
+        }
+
+        toast("Description generated", "success");
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles" style="font-size:10px"></i> Auto-generate';
+    };
 
     // ── Image upload handler ────────────────────────────────────
     window.handleImageUpload = async function(input) {
@@ -424,19 +668,25 @@
         document.getElementById("upload-placeholder").style.display = "none";
         document.getElementById("upload-preview").style.display     = "block";
         document.getElementById("img-preview-el").src = url;
+        // Also set the hidden field so the URL is saved
+        document.getElementById("f-image").value = url;
     }
 
-    function hideUploadPreview() {
+    function hideUploadPreview(keepImageUrl) {
         document.getElementById("upload-placeholder").style.display = "block";
         document.getElementById("upload-preview").style.display     = "none";
         document.getElementById("img-preview-el").src = "";
-        document.getElementById("f-image").value = "";
+        // Only clear f-image if not preserving it (e.g. when adding new product)
+        if (!keepImageUrl) {
+            document.getElementById("f-image").value = "";
+        }
         document.getElementById("f-image-file").value = "";
     }
 
     window.clearImage = function(e) {
         e.stopPropagation();
-        hideUploadPreview();
+        imageCleared = true;  // Mark that user explicitly removed the image
+        hideUploadPreview(false);  // Clear the image URL and preview
     };
 
     // Drag & drop support
@@ -456,20 +706,21 @@
         }
     });
 
-    // Reset image zone when modal opens
+    // Reset image zone when modal opens (new product)
     const origOpenModal = window.openModal;
     window.openModal = function() {
         origOpenModal();
-        hideUploadPreview();
+        hideUploadPreview(false);  // Clear everything for new product
     };
 
-    // Load existing image when editing
+    // Load existing image + zone when editing
     const origOpenEdit = window.openEdit;
     window.openEdit = function(id) {
         origOpenEdit(id);
         const p = allProducts.find(x => x.id === id);
-        hideUploadPreview();
+        hideUploadPreview(true);  // Keep f-image value (preserving existing URL)
         if (p && p.image_url) {
+            // Restore the image preview AND the hidden field value
             setTimeout(() => showUploadPreview(p.image_url), 50);
         }
     };

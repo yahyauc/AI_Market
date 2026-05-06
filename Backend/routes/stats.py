@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify
 from models.product import Product
 from models.order import Order
 from models.user import User
+from models.zone import Zone
 from datetime import datetime, timedelta
 from collections import defaultdict
 
@@ -13,9 +14,11 @@ def get_stats():
     products = Product.query.all()
     orders   = Order.query.all()
     users    = User.query.all()
+    zones    = Zone.query.all()
 
     total_revenue  = sum(o.get_total() for o in orders)
     low_stock      = [p for p in products if p.stock <= 5]
+    total_stock    = sum(p.stock for p in products)
 
     # Orders by status
     status_counts = defaultdict(int)
@@ -51,37 +54,31 @@ def get_stats():
     for p in products:
         category_stock[p.category] += p.stock
 
+    # Zone summary for dashboard
+    zone_summary = []
+    for z in zones:
+        linked_count = Product.query.filter_by(zone_id=z.id).count()
+        zone_summary.append({
+            "name": z.name,
+            "detected": z.last_detected_count,
+            "empty": z.empty_slots,
+            "baseline": z.baseline_capacity,
+            "stock_pct": z.stock_percentage,
+            "linked_products": linked_count,
+        })
+
     return jsonify({
         "total_products":       len(products),
         "total_orders":         len(orders),
         "total_users":          len(users),
         "total_revenue":        round(total_revenue, 2),
+        "total_stock":          total_stock,
         "low_stock_count":      len(low_stock),
         "low_stock_products":   [p.to_dict() for p in low_stock],
         "status_counts":        dict(status_counts),
         "revenue_by_day":       revenue_by_day,
         "top_products":         top_products,
         "category_stock":       dict(category_stock),
+        "zone_summary":         zone_summary,
         "recent_orders":        [o.to_dict() for o in Order.query.order_by(Order.created_at.desc()).limit(5).all()]
     }), 200
-
-
-@stats_bp.route("/alerts/simulate", methods=["GET"])
-def simulate_ai():
-    low_stock    = Product.query.filter(Product.stock <= 5).all()
-    out_of_stock = [p for p in low_stock if p.stock == 0]
-
-    alerts = []
-    if out_of_stock:
-        names = ", ".join(p.name for p in out_of_stock)
-        alerts.append(f"🚨 OUT OF STOCK: {names}")
-
-    low = [p for p in low_stock if p.stock > 0]
-    if low:
-        names = ", ".join(f"{p.name} ({p.stock})" for p in low)
-        alerts.append(f"⚠️ LOW STOCK: {names} — restock recommended")
-
-    if alerts:
-        return jsonify({"status": "alert", "message": " | ".join(alerts)}), 200
-
-    return jsonify({"status": "ok", "message": "✅ All stock levels are healthy. No action needed."}), 200

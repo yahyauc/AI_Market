@@ -10,10 +10,17 @@ import os
 
 chatbot_bp = Blueprint("chatbot", __name__)
 
-client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-
-# Fastest + most capable Groq model
+# Lazy-loaded Groq client
+_groq_client = None
 GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_API_KEY = "Use your own groq api key here pls :)"
+
+
+def _get_groq_client():
+    global _groq_client
+    if _groq_client is None:
+        _groq_client = Groq(api_key=GROQ_API_KEY)
+    return _groq_client
 
 
 def build_store_context():
@@ -153,6 +160,7 @@ def admin_chat():
     full_system   = SYSTEM_PROMPT + "\n\n" + store_context
 
     try:
+        client = _get_groq_client()
         response = client.chat.completions.create(
             model    = GROQ_MODEL,
             messages = [
@@ -194,3 +202,84 @@ def get_suggestions():
         ]
 
     return jsonify({"suggestions": suggestions}), 200
+
+
+# ── Customer-facing chatbot ─────────────────────────────────────
+
+def build_customer_context():
+    """Build a product catalog context string for customer-facing chatbot."""
+    products = Product.query.filter(Product.stock > 0).all()
+    all_products = Product.query.all()
+
+    cat_data = defaultdict(list)
+    for p in all_products:
+        cat_data[p.category].append(p)
+
+    lines = []
+    lines.append("=== SMART SUPERMARKET — PRODUCT CATALOG ===")
+    lines.append(f"Total products available: {len(products)}")
+    lines.append(f"Categories: {', '.join(cat_data.keys())}")
+    lines.append("")
+    lines.append("--- AVAILABLE PRODUCTS ---")
+    for cat, prods in cat_data.items():
+        in_stock = [p for p in prods if p.stock > 0]
+        lines.append(f"\n{cat} ({len(in_stock)} available):")
+        for p in in_stock:
+            desc = f" — {p.description}" if p.description else ""
+            lines.append(f"  - {p.name}: {p.price} MAD{desc}")
+        out = [p for p in prods if p.stock == 0]
+        if out:
+            lines.append(f"  (Out of stock: {', '.join(p.name for p in out)})")
+    lines.append("\n======================================")
+
+    return "\n".join(lines)
+
+
+CUSTOMER_SYSTEM_PROMPT = """You are a friendly and helpful shopping assistant for Smart Supermarket.
+
+Your role is to help CUSTOMERS (shoppers) with:
+1. Finding products — suggest items from the catalog based on what they need
+2. Product recommendations — suggest complementary products or alternatives
+3. Price information — tell them exact prices in MAD (Moroccan Dirham)
+4. Category browsing — help them explore what's available
+5. General store questions — store info, delivery, shopping tips
+
+Rules:
+- Always be warm, friendly, and helpful — like a knowledgeable store assistant
+- Use MAD as currency (Moroccan Dirham)
+- Keep responses concise (2-4 sentences for simple questions, more for recommendations)
+- If a product is out of stock, suggest alternatives from the same category
+- Never show internal business data, revenue, or admin information
+- Always respond in English
+- Use emojis sparingly for a friendly tone
+- If asked about something not in the catalog, politely say it's not currently available
+- Format product suggestions clearly with name and price"""
+
+
+@chatbot_bp.route("/chatbot/customer", methods=["POST"])
+def customer_chat():
+    data = request.get_json()
+    messages = data.get("messages", [])
+
+    if not messages:
+        return jsonify({"error": "No messages provided"}), 400
+
+    store_context = build_customer_context()
+    full_system = CUSTOMER_SYSTEM_PROMPT + "\n\n" + store_context
+
+    try:
+        client = _get_groq_client()
+        response = client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=[
+                {"role": "system", "content": full_system},
+                *messages
+            ],
+            max_tokens=512,
+            temperature=0.6,
+        )
+        reply = response.choices[0].message.content
+        return jsonify({"reply": reply}), 200
+
+    except Exception as e:
+        return jsonify({"error": f"AI service error: {str(e)}"}), 500

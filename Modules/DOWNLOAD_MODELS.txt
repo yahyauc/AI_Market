@@ -1,0 +1,58 @@
+================================================================
+  SMART MARKET — AI MODEL DOWNLOAD INSTRUCTIONS
+================================================================
+
+This project uses two custom-trained YOLOv8 models for real-time
+shelf monitoring. These files are too large for GitHub and must
+be downloaded separately.
+
+----------------------------------------------------------------
+  MODEL FILES REQUIRED
+----------------------------------------------------------------
+
+1. Product_detector_model.pt   (~326 MB)
+   - Detects and counts individual products on shelves
+   - Custom YOLOv8 model
+
+2. impty_shelfs.pt             (~109 MB)
+   - Detects empty shelf spaces that need restocking
+   - Custom YOLOv8 model
+
+----------------------------------------------------------------
+  DOWNLOAD LINKS
+----------------------------------------------------------------
+
+Download both models from the following link:
+https://drive.google.com/drive/folders/YOUR_SHARED_FOLDER_ID
+
+(Contact the project team if the link is expired or unavailable)
+
+----------------------------------------------------------------
+  INSTALLATION
+----------------------------------------------------------------
+
+After downloading, place both .pt files in THIS directory:
+
+   Modules/
+   ├── Product_detector_model.pt
+   └── impty_shelfs.pt
+
+The backend (Backend/config.py) is configured to look for the
+models in this exact location relative to the project root.
+
+----------------------------------------------------------------
+  VERIFICATION
+----------------------------------------------------------------
+
+To verify the models are correctly placed, start the backend
+and visit:
+
+   http://127.0.0.1:5000/api/vision/diagnostic
+
+This endpoint will show whether each model file is found and
+its size in MB.
+
+================================================================
+  Team: Kanar Khalid, Hamza Yahia, Marouane Rhazlani
+  Ecole Superieure de Technologie — 2025
+================================================================

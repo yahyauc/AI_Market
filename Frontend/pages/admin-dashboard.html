@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div class="layout-admin">
@@ -73,7 +72,12 @@
             <div class="stat-card">
                 <div class="stat-icon blue"><i class="fa-solid fa-box"></i></div>
                 <div class="stat-value" id="s-products">—</div>
-                <div class="stat-label">Total Products</div>
+                <div class="stat-label">Unique Products</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple" style="background:rgba(124,58,237,0.12);color:#7c3aed"><i class="fa-solid fa-cubes-stacked"></i></div>
+                <div class="stat-value" id="s-stock">—</div>
+                <div class="stat-label">Total Stock Units</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon green"><i class="fa-solid fa-money-bill-wave"></i></div>
@@ -92,26 +96,7 @@
             </div>
         </div>
 
-        <!-- AI Box -->
-        <div class="card mb-24" style="border-left:4px solid var(--primary)">
-            <div class="flex gap-12" style="align-items:center;margin-bottom:14px">
-                <i class="fa-solid fa-microchip" style="font-size:22px;color:var(--primary)"></i>
-                <div>
-                    <div style="font-weight:700;font-size:15px">AI Stock Monitor</div>
-                    <div style="font-size:12px;color:var(--muted)">Detect low stock anomalies and get restocking recommendations</div>
-                </div>
-                <div style="display:flex;gap:8px;margin-left:auto">
-                    <button class="btn btn-primary btn-sm" onclick="runAI()">Run Detection</button>
-                    <button class="btn btn-outline btn-sm" id="btn-pdf-alerts" onclick="downloadAlertsPDF()" style="display:none">
-                        Download Report
-                    </button>
-                </div>
-            </div>
-            <div id="ai-result" style="padding:12px 16px;background:var(--bg);border-radius:var(--radius);font-size:14px;font-weight:500;color:var(--muted)">
-                Click "Run Detection" to analyze stock levels...
-            </div>
-            <div id="ai-alerts-list" style="margin-top:12px;display:none"></div>
-        </div>
+
 
         <!-- Charts row -->
         <div style="display:grid;grid-template-columns:1.8fr 1fr;gap:20px;margin-bottom:24px">
@@ -120,14 +105,25 @@
                     <span class="card-title">Revenue — Last 7 Days</span>
                     <span class="badge badge-blue">Weekly</span>
                 </div>
-                <canvas id="chart-revenue" style="max-height:220px"></canvas>
+                <canvas id="chart-revenue" style="max-height:180px"></canvas>
             </div>
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">Orders by Status</span>
                     <span class="badge badge-green">Live</span>
                 </div>
-                <canvas id="chart-status" style="max-height:220px"></canvas>
+                <canvas id="chart-status" style="max-height:180px"></canvas>
+            </div>
+        </div>
+
+        <!-- Zone Stock Monitor -->
+        <div class="card mb-24" id="zone-monitor-card">
+            <div class="card-header">
+                <span class="card-title"><i class="fa-solid fa-camera" style="margin-right:6px;color:var(--primary)"></i>Zone Stock Monitor — Vision AI</span>
+                <a href="./admin-vision.html" class="btn btn-outline btn-sm">Open Vision AI</a>
+            </div>
+            <div id="zone-monitor-body">
+                <div class="flex-center" style="padding:32px"><span class="spinner"></span></div>
             </div>
         </div>
 
@@ -163,7 +159,7 @@
 <div class="toast-container" id="toast-container"></div>
 
 <script type="module">
-    import { getStats, simulateAI, requireAdmin } from '../js/api.js';
+    import { getStats, requireAdmin, getVisionSummary, getLiveDashboard } from '../js/api.js';
     import { toast, formatPrice } from '../js/app.js';
 
     const user = requireAdmin();
@@ -187,7 +183,8 @@
 
         // Stats
         document.getElementById("s-products").textContent = data.total_products;
-        document.getElementById("s-revenue").textContent  = Number(data.total_revenue).toLocaleString();
+        document.getElementById("s-stock").textContent    = Number(data.total_stock).toLocaleString();
+        document.getElementById("s-revenue").textContent  = Number(data.total_revenue).toLocaleString() + " DH";
         document.getElementById("s-orders").textContent   = data.total_orders;
         document.getElementById("s-lowstock").textContent = data.low_stock_count;
 
@@ -208,9 +205,9 @@
         const values = Object.values(byDay);
         const ctx = document.getElementById("chart-revenue").getContext("2d");
 
-        const grad = ctx.createLinearGradient(0, 0, 0, 220);
-        grad.addColorStop(0, "rgba(37,99,235,0.18)");
-        grad.addColorStop(1, "rgba(37,99,235,0.00)");
+        const grad = ctx.createLinearGradient(0, 0, 0, 180);
+        grad.addColorStop(0, "rgba(22,163,74,0.18)");
+        grad.addColorStop(1, "rgba(22,163,74,0.00)");
 
         chartRevenue = new Chart(ctx, {
             type: "line",
@@ -219,10 +216,10 @@
                 datasets: [{
                     label: "Revenue (MAD)",
                     data: values,
-                    borderColor: "#2563eb",
+                    borderColor: "#16a34a",
                     backgroundColor: grad,
                     borderWidth: 2.5,
-                    pointBackgroundColor: "#2563eb",
+                    pointBackgroundColor: "#16a34a",
                     pointRadius: 4,
                     fill: true,
                     tension: 0.4
@@ -247,7 +244,7 @@
 
         const palette = {
             pending:   "#ca8a04",
-            confirmed: "#2563eb",
+            confirmed: "#16a34a",
             shipped:   "#ea580c",
             delivered: "#16a34a",
             cancelled: "#dc2626"
@@ -284,7 +281,7 @@
         badge.textContent = `${products.length} alert${products.length !== 1 ? "s" : ""}`;
 
         if (!products.length) {
-            list.innerHTML = `<div class="empty-state" style="padding:32px 0"><div class="empty-icon" style="font-size:32px">✅</div><p>All products well-stocked</p></div>`;
+            list.innerHTML = `<div class="empty-state" style="padding:32px 0"><div class="empty-icon" style="font-size:32px"><i class="fa-solid fa-circle-check" style="color:#16a34a"></i></div><p>All products well-stocked</p></div>`;
             return;
         }
 
@@ -322,205 +319,143 @@
         `).join("");
     }
 
-    let lastAlerts = [];
+    // ── Zone Stock Monitor (LIVE) ──────────────────────────────────
+    async function loadZoneMonitor() {
+        try {
+            const data = await getLiveDashboard();
+            const body = document.getElementById("zone-monitor-body");
+            const zones = data.zones || [];
 
-    window.runAI = async function() {
-        const el        = document.getElementById("ai-result");
-        const alertList = document.getElementById("ai-alerts-list");
-        const pdfBtn    = document.getElementById("btn-pdf-alerts");
-
-        el.style.background = "var(--bg)";
-        el.style.color      = "var(--muted)";
-        el.textContent      = "Analyzing inventory...";
-        alertList.style.display = "none";
-        pdfBtn.style.display    = "none";
-
-        // Get real stock data
-        const statsRes = await fetch("http://127.0.0.1:5000/api/stats");
-        const stats    = await statsRes.json();
-
-        const outOfStock = stats.low_stock_products.filter(p => p.stock === 0);
-        const lowStock   = stats.low_stock_products.filter(p => p.stock > 0);
-
-        lastAlerts = stats.low_stock_products;
-
-        if (stats.low_stock_count === 0) {
-            el.style.background = "var(--green-bg)";
-            el.style.color      = "var(--green)";
-            el.textContent      = "All stock levels are healthy. No action required.";
-            return;
-        }
-
-        // Status message
-        el.style.background = "var(--red-bg)";
-        el.style.color      = "var(--red)";
-        el.textContent      = stats.low_stock_count + " alert(s) detected — immediate action required.";
-
-        // Alert list
-        alertList.style.display = "block";
-        alertList.innerHTML = `
-            <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
-                <table style="width:100%;border-collapse:collapse;font-size:13px">
-                    <thead>
-                        <tr style="background:var(--bg)">
-                            <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.5px">Product</th>
-                            <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.5px">Category</th>
-                            <th style="padding:10px 14px;text-align:center;font-weight:700;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.5px">Stock</th>
-                            <th style="padding:10px 14px;text-align:center;font-weight:700;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.5px">Status</th>
-                            <th style="padding:10px 14px;text-align:left;font-weight:700;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:0.5px">Action Required</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${stats.low_stock_products.map(p => `
-                        <tr style="border-top:1px solid var(--border)">
-                            <td style="padding:11px 14px;font-weight:600;color:var(--text)">${p.name}</td>
-                            <td style="padding:11px 14px;color:var(--muted)">${p.category}</td>
-                            <td style="padding:11px 14px;text-align:center;font-weight:700;color:${p.stock === 0 ? 'var(--red)' : 'var(--orange)'}">${p.stock}</td>
-                            <td style="padding:11px 14px;text-align:center">
-                                <span class="badge ${p.stock === 0 ? 'badge-red' : 'badge-orange'}">
-                                    ${p.stock === 0 ? 'Out of Stock' : 'Low Stock'}
-                                </span>
-                            </td>
-                            <td style="padding:11px 14px;font-size:12px;color:var(--text-2)">
-                                ${p.stock === 0 ? 'Restock immediately' : 'Order within 24h'}
-                            </td>
-                        </tr>`).join("")}
-                    </tbody>
-                </table>
-            </div>`;
-
-        pdfBtn.style.display = "inline-flex";
-    };
-
-    window.downloadAlertsPDF = function() {
-        if (!lastAlerts.length) return;
-
-        const { jsPDF } = window.jspdf;
-        const doc    = new jsPDF({ unit: "mm", format: "a4" });
-        const pageW  = doc.internal.pageSize.getWidth();
-        const pageH  = doc.internal.pageSize.getHeight();
-        const margin = 14;
-        let y        = 0;
-
-        // Header
-        doc.setFillColor(37, 99, 235);
-        doc.rect(0, 0, pageW, 32, "F");
-        doc.setTextColor(255, 255, 255);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.text("Smart Supermarket", margin, 13);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(10);
-        doc.text("Stock Alert Report", margin, 21);
-        const dateStr = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"long", year:"numeric" })
-            + "  " + new Date().toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit" });
-        doc.text(dateStr, pageW - margin, 21, { align: "right" });
-        y = 42;
-
-        doc.setTextColor(26, 31, 54);
-
-        // Summary box
-        const outCount = lastAlerts.filter(p => p.stock === 0).length;
-        const lowCount = lastAlerts.filter(p => p.stock > 0).length;
-
-        doc.setFillColor(239, 244, 255);
-        doc.setDrawColor(191, 207, 254);
-        doc.setLineWidth(0.3);
-        doc.roundedRect(margin, y, pageW - margin * 2, 18, 3, 3, "FD");
-
-        doc.setFontSize(11);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(220, 38, 38);
-        doc.text("Total Alerts: " + lastAlerts.length, margin + 6, y + 7);
-        doc.setTextColor(220, 38, 38);
-        doc.text("Out of Stock: " + outCount, margin + 60, y + 7);
-        doc.setTextColor(234, 88, 12);
-        doc.text("Low Stock: " + lowCount, margin + 110, y + 7);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(26, 31, 54);
-        y += 26;
-
-        // Table header
-        const cols = [
-            { label: "Product",          w: 55, align: "left" },
-            { label: "Category",         w: 30, align: "left" },
-            { label: "Stock",            w: 18, align: "center" },
-            { label: "Status",           w: 28, align: "center" },
-            { label: "Action Required",  w: 42, align: "left" },
-        ];
-
-        doc.setFillColor(245, 246, 250);
-        doc.setDrawColor(228, 231, 240);
-        doc.setLineWidth(0.2);
-        doc.rect(margin, y, pageW - margin * 2, 9, "FD");
-        doc.setFontSize(8);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(140, 145, 184);
-
-        let x = margin + 3;
-        cols.forEach(col => {
-            if (col.align === "center") doc.text(col.label, x + col.w / 2, y + 6, { align: "center" });
-            else doc.text(col.label, x, y + 6);
-            x += col.w;
-        });
-        y += 9;
-
-        // Table rows
-        lastAlerts.forEach((p, ri) => {
-            if (y > pageH - 20) { doc.addPage(); y = 20; }
-            if (ri % 2 === 0) {
-                doc.setFillColor(250, 251, 255);
-                doc.rect(margin, y, pageW - margin * 2, 8, "F");
+            // ── Critical alert banner ────────────────────────────────
+            let alertBanner = document.getElementById("critical-alert-banner");
+            if (!alertBanner) {
+                alertBanner = document.createElement("div");
+                alertBanner.id = "critical-alert-banner";
+                document.getElementById("zone-monitor-card").prepend(alertBanner);
             }
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(9);
 
-            const rowData = [
-                p.name,
-                p.category,
-                String(p.stock),
-                p.stock === 0 ? "Out of Stock" : "Low Stock",
-                p.stock === 0 ? "Restock immediately" : "Order within 24h"
-            ];
+            if (data.has_critical_alert) {
+                alertBanner.style.display = "block";
+                const criticalDetails = data.critical_zones.map(name => {
+                    const z = zones.find(zz => zz.name === name);
+                    return z ? `${name} (${z.stock_percentage || 0}%)` : name;
+                }).join(", ");
+                alertBanner.innerHTML = `
+                    <div style="background:linear-gradient(135deg,#fef2f2,#fff1f2);border:1px solid #fecaca;border-radius:var(--radius);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
+                        <div style="width:40px;height:40px;border-radius:50%;background:#dc2626;display:flex;align-items:center;justify-content:center;animation:pulse 1.5s infinite;flex-shrink:0">
+                            <i class="fa-solid fa-triangle-exclamation" style="color:white;font-size:16px"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:14px;color:#dc2626">CRITICAL: Stock below 40%!</div>
+                            <div style="font-size:12px;color:#991b1b;margin-top:2px">
+                                Zones: <strong>${criticalDetails}</strong> — Stock has dropped below critical threshold. Immediate restocking needed.
+                            </div>
+                        </div>
+                        <a href="./admin-vision.html" class="btn btn-primary btn-sm" style="margin-left:auto;background:#dc2626;border-color:#dc2626;white-space:nowrap;flex-shrink:0">View Details</a>
+                    </div>`;
+            } else {
+                alertBanner.style.display = "none";
+            }
 
-            x = margin + 3;
-            cols.forEach((col, ci) => {
-                if (ci === 2) {
-                    doc.setTextColor(p.stock === 0 ? 220 : 234, p.stock === 0 ? 38 : 88, p.stock === 0 ? 38 : 12);
-                    doc.setFont("helvetica", "bold");
-                    doc.text(rowData[ci], x + col.w / 2, y + 5.5, { align: "center" });
-                    doc.setFont("helvetica", "normal");
-                    doc.setTextColor(26, 31, 54);
-                } else if (ci === 3) {
-                    doc.setTextColor(p.stock === 0 ? 220 : 234, p.stock === 0 ? 38 : 88, p.stock === 0 ? 38 : 12);
-                    doc.setFont("helvetica", "bold");
-                    doc.text(rowData[ci], x + col.w / 2, y + 5.5, { align: "center" });
-                    doc.setFont("helvetica", "normal");
-                    doc.setTextColor(26, 31, 54);
-                } else {
-                    doc.text(rowData[ci].slice(0, 30), x, y + 5.5);
-                }
-                x += col.w;
-            });
+            // ── Timestamp ────────────────────────────────────────────
+            let tsEl = document.getElementById("zone-monitor-ts");
+            if (!tsEl) {
+                tsEl = document.createElement("div");
+                tsEl.id = "zone-monitor-ts";
+                tsEl.style.cssText = "font-size:10px;color:var(--muted);text-align:right;padding:0 4px 4px";
+                body.parentElement.appendChild(tsEl);
+            }
+            tsEl.textContent = `Live · Last update: ${data.timestamp || 'now'}`;
 
-            doc.setDrawColor(228, 231, 240);
-            doc.setLineWidth(0.1);
-            doc.line(margin, y + 8, pageW - margin, y + 8);
-            y += 8;
-        });
+            if (zones.length === 0) {
+                body.innerHTML = `<div class="empty-state" style="padding:24px 0"><p style="font-size:13px;color:var(--muted)">No zones configured. <a href="./admin-vision.html" style="color:var(--primary);font-weight:600">Set up zones →</a></p></div>`;
+                return;
+            }
 
-        // Footer
-        doc.setFontSize(8);
-        doc.setTextColor(140, 145, 184);
-        doc.text(
-            "Smart Supermarket  |  Stock Alert Report  |  Generated: " + dateStr,
-            pageW / 2, pageH - 6, { align: "center" }
-        );
+            body.innerHTML = `
+                <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:12px;padding:4px 0">
+                    ${zones.map(z => {
+                        const isCritical = z.alert_level === 'high';
+                        const isWarning = z.alert_level === 'medium';
+                        const borderColor = isCritical ? '#dc2626' : isWarning ? '#ea580c' : 'var(--border)';
+                        const bgColor = isCritical ? '#fef2f2' : isWarning ? '#fff7ed' : 'transparent';
+                        const alertColor = isCritical ? 'var(--red)' : isWarning ? 'var(--orange)' : 'var(--green)';
+                        const alertText = isCritical ? 'CRITICAL' : isWarning ? 'Warning' : 'OK';
+                        const pct = z.stock_percentage != null ? z.stock_percentage : 100;
+                        const barColor = pct >= 60 ? '#16a34a' : pct >= 40 ? '#ea580c' : '#dc2626';
+                        const baseline = z.baseline_capacity || 0;
+                        return `
+                        <div style="border:2px solid ${borderColor};border-radius:var(--radius);padding:14px 16px;background:${bgColor};transition:all 0.3s${isCritical ? ';animation:pulse-border 2s infinite' : ''}">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                                <span style="font-weight:700;font-size:13px;color:var(--text)">${z.name}</span>
+                                <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;background:${isCritical ? '#fecaca' : isWarning ? '#fed7aa' : 'var(--green-bg)'};color:${alertColor}">${alertText}</span>
+                            </div>
+                            <!-- Stock percentage bar -->
+                            <div style="margin-bottom:10px">
+                                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+                                    <span style="font-size:18px;font-weight:800;color:${barColor}">${pct}%</span>
+                                    <span style="font-size:10px;color:var(--muted);font-weight:600">${z.last_detected_count} / ${baseline || '—'}</span>
+                                </div>
+                                <div style="height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden">
+                                    <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;transition:width 0.5s ease"></div>
+                                </div>
+                            </div>
+                            <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                                <div style="text-align:center">
+                                    <div style="font-size:16px;font-weight:800;color:var(--primary)">${z.last_detected_count}</div>
+                                    <div style="font-size:9px;color:var(--muted);font-weight:600">PRODUCTS</div>
+                                </div>
+                                <div style="text-align:center">
+                                    <div style="font-size:16px;font-weight:800;color:var(--red)">${z.empty_slots}</div>
+                                    <div style="font-size:9px;color:var(--muted);font-weight:600">EMPTY</div>
+                                </div>
+                                <div style="text-align:center">
+                                    <div style="font-size:16px;font-weight:800;color:#6b7280">${baseline || '—'}</div>
+                                    <div style="font-size:9px;color:var(--muted);font-weight:600">BASELINE</div>
+                                </div>
+                            </div>
+                            <div style="font-size:10px;color:var(--muted);text-align:right">${z.last_scan_at || 'Never scanned'}</div>
+                        </div>`;
+                    }).join('')}
+                </div>`;
 
-        doc.save("stock_alert_report_" + new Date().toISOString().slice(0,10) + ".pdf");
-    };
+            // Also update the stat cards with live data
+            if (data.total_products_db !== undefined) {
+                document.getElementById("s-products").textContent = data.total_products_db;
+            }
+            if (data.total_orders !== undefined) {
+                document.getElementById("s-orders").textContent = data.total_orders;
+            }
+            if (data.low_stock_count !== undefined) {
+                document.getElementById("s-lowstock").textContent = data.low_stock_count;
+            }
+
+        } catch (e) {
+            console.error('Zone monitor error:', e);
+            document.getElementById("zone-monitor-body").innerHTML =
+                `<div style="padding:16px;font-size:13px;color:var(--muted)">Could not load zone data</div>`;
+        }
+    }
 
     load();
+    loadZoneMonitor();
+
+    // ── Auto-refresh every 10 seconds for live data ──────────────
+    setInterval(() => {
+        loadZoneMonitor();
+        load(); // refresh stats too (orders, stock, etc.)
+    }, 10000);
 </script>
+
+<style>
+    @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.05); }
+    }
+    @keyframes pulse-border {
+        0%, 100% { border-color: #dc2626; }
+        50% { border-color: #fca5a5; }
+    }
+</style>
 </body>
 </html>

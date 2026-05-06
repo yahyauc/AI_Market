@@ -3,164 +3,565 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Supermarket</title>
+    <title>Smart Supermarket — Fresh Groceries Online</title>
+    <meta name="description" content="Shop fresh groceries online at Smart Supermarket. Fresh fruits, vegetables, dairy, meat, and more delivered to your door.">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        /* ── Hero Section ── */
         .hero {
-            background: linear-gradient(135deg, #eff4ff 0%, #f5f6fa 60%, #fff7ed 100%);
-            border-bottom: 1px solid var(--border);
-            padding: 80px 24px;
-            text-align: center;
+            position: relative;
+            min-height: 520px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 40%, #f0fdf4 100%);
         }
 
-        .hero-icon {
-            font-size: 64px;
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 560px;
+            padding: 60px 40px 60px 60px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #dcfce7;
+            color: #15803d;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-bottom: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-10px); }
         }
 
         .hero h1 {
-            font-size: 42px;
+            font-size: 48px;
             font-weight: 800;
-            letter-spacing: -1.5px;
+            letter-spacing: -2px;
+            line-height: 1.1;
             color: var(--text);
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
-        .hero h1 span { color: var(--primary); }
-
-        .hero p {
-            font-size: 17px;
-            color: var(--text-2);
-            max-width: 480px;
-            margin: 0 auto 32px;
+        .hero h1 .highlight {
+            color: #16a34a;
         }
 
-        .hero-cta {
-            display: flex;
-            gap: 14px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .features {
-            max-width: 1100px;
-            margin: 64px auto;
-            padding: 0 24px;
-        }
-
-        .features h2 {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .features > p {
-            text-align: center;
-            color: var(--muted);
-            margin-bottom: 48px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
-        }
-
-        .feature-card {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 28px 24px;
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow);
-        }
-
-        .feature-icon {
-            font-size: 40px;
-            margin-bottom: 14px;
-        }
-
-        .feature-card h3 {
+        .hero-desc {
             font-size: 16px;
-            margin-bottom: 8px;
+            color: var(--text-2);
+            line-height: 1.7;
+            margin-bottom: 32px;
+            max-width: 420px;
         }
 
-        .feature-card p {
-            font-size: 13px;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .categories-section {
-            background: var(--white);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            padding: 56px 24px;
-        }
-
-        .categories-inner {
-            max-width: 900px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .categories-inner h2 { margin-bottom: 8px; }
-        .categories-inner > p { color: var(--muted); margin-bottom: 36px; }
-
-        .cat-grid {
+        .hero-buttons {
             display: flex;
-            flex-wrap: wrap;
             gap: 14px;
-            justify-content: center;
+            flex-wrap: wrap;
         }
 
-        .cat-chip {
-            display: flex;
+        .btn-shop {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 22px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 40px;
+            padding: 14px 32px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+        }
+
+        .btn-shop:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(22,163,74,0.4);
+        }
+
+        .btn-explore {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: white;
+            color: var(--text);
+            border: 2px solid var(--border2);
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-explore:hover {
+            border-color: #16a34a;
+            color: #16a34a;
+            transform: translateY(-2px);
+        }
+
+        .hero-image {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 55%;
+            overflow: hidden;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 120px;
+            background: linear-gradient(to right, #f0fdf4, transparent);
+            z-index: 1;
+        }
+
+        /* ── Value Cards ── */
+        .value-strip {
+            background: white;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 0;
+        }
+
+        .value-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .value-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 24px 28px;
+            border-right: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .value-item:last-child { border-right: none; }
+        .value-item:hover { background: #f0fdf4; }
+
+        .value-icon {
+            width: 48px;
+            height: 48px;
+            background: #f0fdf4;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .value-icon i { font-size: 20px; color: #16a34a; }
+        .value-text h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+        .value-text p { font-size: 12px; color: var(--muted); margin: 0; }
+
+        /* ── Categories Section ── */
+        .categories-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 64px 24px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .section-header h2 {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .section-header a {
             font-size: 14px;
             font-weight: 600;
-            color: var(--text-2);
-            text-decoration: none;
-            transition: all 0.15s;
+            color: #16a34a;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.2s;
         }
 
-        .cat-chip:hover {
-            background: var(--primary-bg);
-            border-color: var(--primary-bd);
-            color: var(--primary);
+        .section-header a:hover { gap: 8px; }
+
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
         }
 
-        footer {
-            background: var(--text);
-            color: rgba(255,255,255,0.6);
+        .cat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px 16px;
             text-align: center;
-            padding: 28px 24px;
-            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
         }
 
-        footer strong { color: white; }
+        .cat-card:hover {
+            border-color: #16a34a;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(22,163,74,0.12);
+        }
+
+        .cat-card .cat-icon {
+            width: 56px;
+            height: 56px;
+            background: #f0fdf4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            transition: background 0.2s;
+        }
+
+        .cat-card:hover .cat-icon { background: #dcfce7; }
+
+        .cat-card .cat-icon i { font-size: 22px; color: #16a34a; }
+        .cat-card span { font-size: 13px; font-weight: 700; color: var(--text); display: block; }
+        .cat-card .cat-count { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+        /* ── Featured Products ── */
+        .featured-section {
+            background: #f8faf8;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 64px 24px;
+        }
+
+        .featured-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .products-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+        }
+
+        .fp-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .fp-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+
+        .fp-img {
+            width: 100%;
+            height: 160px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .fp-img img {
+            max-width: 100%;
+            max-height: 160px;
+            object-fit: contain;
+        }
+
+        .fp-img i { font-size: 36px; color: var(--border2); }
+
+        .fp-info {
+            padding: 14px;
+        }
+
+        .fp-cat {
+            font-size: 11px;
+            color: #16a34a;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .fp-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fp-desc {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .fp-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .fp-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .fp-price small {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .fp-add {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: #16a34a;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fp-add:hover { background: #15803d; transform: scale(1.1); }
+
+        /* ── Promo Banner ── */
+        .promo-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 64px 24px;
+        }
+
+        .promo-banner {
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            position: relative;
+            min-height: 260px;
+            display: flex;
+            align-items: center;
+        }
+
+        .promo-banner img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .promo-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
+        }
+
+        .promo-content {
+            position: relative;
+            z-index: 2;
+            padding: 40px 48px;
+            color: white;
+            max-width: 500px;
+        }
+
+        .promo-content h2 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .promo-content p {
+            font-size: 15px;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 24px;
+        }
+
+        /* ── Trust Section ── */
+        .trust-section {
+            background: white;
+            border-top: 1px solid var(--border);
+            padding: 48px 24px;
+        }
+
+        .trust-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+        }
+
+        .trust-item {
+            text-align: center;
+        }
+
+        .trust-num {
+            font-size: 36px;
+            font-weight: 800;
+            color: #16a34a;
+            line-height: 1;
+        }
+
+        .trust-label {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* ── Footer ── */
+        .site-footer {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 50%, #f0fdf4 100%);
+            color: var(--text-2);
+            padding: 56px 24px 32px;
+            border-top: 2px solid #dcfce7;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand h3 { color: var(--text); font-size: 20px; margin-bottom: 10px; }
+        .footer-brand h3 span { color: #16a34a; }
+        .footer-brand p { font-size: 13px; line-height: 1.7; color: var(--text-2); }
+
+        .footer-col h4 {
+            color: var(--text);
+            font-size: 14px;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+
+        .footer-col a {
+            display: block;
+            color: var(--text-2);
+            font-size: 13px;
+            padding: 4px 0;
+            transition: color 0.15s, padding-left 0.15s;
+        }
+
+        .footer-col a:hover { color: #16a34a; padding-left: 4px; }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            border-top: 1px solid #dcfce7;
+            padding-top: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-socials a {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #dcfce7;
+            color: #16a34a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+            border: 1px solid #bbf7d0;
+        }
+
+        .footer-socials a:hover {
+            background: #16a34a;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(22,163,74,0.3);
+            border-color: #16a34a;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .products-row { grid-template-columns: repeat(3, 1fr); }
+            .footer-inner { grid-template-columns: 1fr 1fr; }
+        }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 28px; }
-            .features-grid { grid-template-columns: 1fr; }
+            .hero { flex-direction: column; min-height: auto; }
+            .hero-content { padding: 40px 24px; max-width: 100%; text-align: center; }
+            .hero h1 { font-size: 32px; }
+            .hero-desc { margin-left: auto; margin-right: auto; }
+            .hero-buttons { justify-content: center; }
+            .hero-image { position: relative; width: 100%; height: 280px; }
+            .hero-image::before { display: none; }
+            .value-grid { grid-template-columns: 1fr 1fr; }
+            .value-item { border-bottom: 1px solid var(--border); }
+            .products-row { grid-template-columns: repeat(2, 1fr); }
+            .promo-content h2 { font-size: 24px; }
+            .footer-inner { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .value-grid { grid-template-columns: 1fr; }
+            .products-row { grid-template-columns: 1fr; }
+            .cat-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
         }
     </style>
 </head>
@@ -168,90 +569,430 @@
 
 <nav id="navbar"></nav>
 
-<!-- Hero -->
+<!-- ── Hero ── -->
 <section class="hero">
-    <div class="hero-icon">🛒</div>
-    <h1>Your <span>Smart</span> Supermarket</h1>
-    <p>Fresh groceries, smart shopping, delivered to your door. Shop smarter, live better.</p>
-    <div class="hero-cta">
-        <a href="pages/products.html" class="btn btn-primary btn-lg">🛍️ Shop Now</a>
-        <a href="pages/login.html"    class="btn btn-outline btn-lg">Sign In</a>
+    <div class="hero-content">
+        <div class="hero-badge">
+            <i class="fa-solid fa-seedling"></i>
+            100% Fresh and Natural
+        </div>
+        <h1>Fresh <span class="highlight">Healthy</span><br>Grocery Food</h1>
+        <p class="hero-desc">
+            Get the freshest groceries delivered right to your door.
+            Quality products, great prices, and smart AI-powered shopping.
+        </p>
+        <div class="hero-buttons">
+            <a href="pages/products.html" class="btn-shop">
+                <i class="fa-solid fa-basket-shopping"></i> Shop Now
+            </a>
+            <a href="pages/products.html" class="btn-explore">
+                <i class="fa-solid fa-grid-2"></i> Browse Categories
+            </a>
+        </div>
+    </div>
+    <div class="hero-image">
+        <img src="images/hero-banner.png" alt="Fresh groceries">
     </div>
 </section>
 
-<!-- Features -->
-<section class="features">
-    <h2>Everything you need</h2>
-    <p>A complete smart shopping experience</p>
-
-    <div class="features-grid">
-        <div class="feature-card fade-up" style="animation-delay:0.05s">
-            <div class="feature-icon">🥛</div>
-            <h3>Fresh Products</h3>
-            <p>Browse hundreds of fresh products across all categories, updated daily.</p>
+<!-- ── Value Proposition ── -->
+<section class="value-strip">
+    <div class="value-grid">
+        <div class="value-item">
+            <div class="value-icon"><i class="fa-solid fa-truck-fast"></i></div>
+            <div class="value-text">
+                <h4>Fast Delivery</h4>
+                <p>Free delivery on orders over 200 MAD</p>
+            </div>
         </div>
-        <div class="feature-card fade-up" style="animation-delay:0.10s">
-            <div class="feature-icon">🛒</div>
-            <h3>Easy Cart</h3>
-            <p>Add items, adjust quantities, and checkout in just a few clicks.</p>
+        <div class="value-item">
+            <div class="value-icon"><i class="fa-solid fa-leaf"></i></div>
+            <div class="value-text">
+                <h4>Always Fresh</h4>
+                <p>Products sourced and updated daily</p>
+            </div>
         </div>
-        <div class="feature-card fade-up" style="animation-delay:0.15s">
-            <div class="feature-icon">📦</div>
-            <h3>Order Tracking</h3>
-            <p>Track your orders in real-time from confirmation to delivery.</p>
+        <div class="value-item">
+            <div class="value-icon"><i class="fa-solid fa-tags"></i></div>
+            <div class="value-text">
+                <h4>Best Prices</h4>
+                <p>Competitive prices on all items</p>
+            </div>
         </div>
-        <div class="feature-card fade-up" style="animation-delay:0.20s">
-            <div class="feature-icon">🤖</div>
-            <h3>AI Stock Monitor</h3>
-            <p>Smart alerts detect low stock automatically, keeping shelves always full.</p>
-        </div>
-        <div class="feature-card fade-up" style="animation-delay:0.25s">
-            <div class="feature-icon">📊</div>
-            <h3>Admin Dashboard</h3>
-            <p>Powerful analytics, charts, and management tools for administrators.</p>
-        </div>
-        <div class="feature-card fade-up" style="animation-delay:0.30s">
-            <div class="feature-icon">🔐</div>
-            <h3>Secure & Reliable</h3>
-            <p>Encrypted passwords, role-based access, and secure data storage.</p>
+        <div class="value-item">
+            <div class="value-icon"><i class="fa-solid fa-headset"></i></div>
+            <div class="value-text">
+                <h4>24/7 Support</h4>
+                <p>AI assistant always ready to help</p>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Categories -->
+<!-- ── Popular Categories ── -->
 <section class="categories-section">
-    <div class="categories-inner">
-        <h2>Shop by Category</h2>
-        <p>Find what you need quickly</p>
-        <div class="cat-grid" id="cat-grid">
-            <!-- Filled by JS -->
+    <div class="section-header">
+        <h2>Popular Categories</h2>
+        <a href="pages/products.html">View all <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="cat-grid" id="cat-grid">
+        <!-- Populated by JS -->
+    </div>
+</section>
+
+<!-- ── Featured Products ── -->
+<section class="featured-section">
+    <div class="featured-inner">
+        <div class="section-header">
+            <h2>Featured Products</h2>
+            <a href="pages/products.html">View all <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+        <div class="products-row" id="featured-products">
+            <div style="grid-column:1/-1;text-align:center;padding:40px">
+                <span class="spinner"></span>
+            </div>
         </div>
     </div>
 </section>
 
-<footer>
-    <strong>Smart Supermarket</strong> &nbsp;|&nbsp;
-    Final Year Project (PFE) — Created by IDIA Students &nbsp;|&nbsp;
-    Ecole Superieure de Technologie &nbsp;|&nbsp; 2025
+<!-- ── Promo Banner ── -->
+<section class="promo-section">
+    <div class="promo-banner">
+        <img src="images/promo-banner.png" alt="Fresh produce">
+        <div class="promo-overlay"></div>
+        <div class="promo-content">
+            <h2>Fresh Deals Every Week</h2>
+            <p>Discover our latest offers on fresh produce, dairy, and more. Quality you can trust at prices you will love.</p>
+            <a href="pages/products.html" class="btn-shop">
+                <i class="fa-solid fa-percent"></i> Explore Offers
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ── Trust / Stats ── -->
+<section class="trust-section">
+    <div class="trust-inner">
+        <div class="trust-item">
+            <div class="trust-num" id="stat-products">--</div>
+            <div class="trust-label">Products Available</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-num" id="stat-categories">--</div>
+            <div class="trust-label">Categories</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-num" id="stat-orders">--</div>
+            <div class="trust-label">Orders Delivered</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-num" id="stat-customers">--</div>
+            <div class="trust-label">Happy Customers</div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <h3><span>Smart</span> Supermarket</h3>
+            <p>Your AI-powered grocery store. Fresh products, smart inventory management, and seamless online shopping experience.</p>
+        </div>
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <a href="pages/products.html">All Products</a>
+            <a href="pages/cart.html">Shopping Cart</a>
+            <a href="pages/orders.html">My Orders</a>
+            <a href="pages/login.html">Account</a>
+        </div>
+        <div class="footer-col">
+            <h4>Categories</h4>
+            <a href="pages/products.html?category=Fruits">Fruits</a>
+            <a href="pages/products.html?category=Vegetables">Vegetables</a>
+            <a href="pages/products.html?category=Dairy">Dairy</a>
+            <a href="pages/products.html?category=Meat">Meat</a>
+        </div>
+        <div class="footer-col">
+            <h4>About</h4>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <span>2025 Smart Supermarket — Final Year Project (PFE) | Ecole Superieure de Technologie</span>
+        <div class="footer-socials">
+            <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" title="Twitter"><i class="fa-brands fa-twitter"></i></a>
+        </div>
+    </div>
 </footer>
 
 <div class="toast-container" id="toast-container"></div>
 
 <script type="module">
-    import { getCategories } from './js/api.js';
-    import { buildNavbar, categoryEmoji } from './js/app.js';
+    import { getProducts, getCategories } from './js/api.js';
+    import { buildNavbar, categoryEmoji, addToCart, toast, formatPrice } from './js/app.js';
 
     buildNavbar("");
 
-    const cats = await getCategories();
-    const grid = document.getElementById("cat-grid");
+    // Category icon map (Font Awesome)
+    const catIconMap = {
+        "Dairy":         "fa-cow",
+        "Bakery":        "fa-bread-slice",
+        "Drinks":        "fa-mug-hot",
+        "Fruits":        "fa-apple-whole",
+        "Vegetables":    "fa-carrot",
+        "Meat":          "fa-drumstick-bite",
+        "Fish":          "fa-fish",
+        "Pantry":        "fa-jar",
+        "Oils":          "fa-bottle-droplet",
+        "Snacks":        "fa-cookie-bite",
+        "Frozen":        "fa-snowflake",
+        "Cleaning":      "fa-spray-can-sparkles",
+        "Personal Care": "fa-pump-soap",
+    };
 
-    if (cats.length) {
-        grid.innerHTML = cats.map(c => `
-            <a href="pages/products.html?category=${encodeURIComponent(c)}" class="cat-chip">
-                <span>${categoryEmoji(c)}</span> ${c}
-            </a>
-        `).join("");
+    // Load data
+    const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+
+    // ── Categories Grid ──
+    const catGrid = document.getElementById("cat-grid");
+    if (categories.length) {
+        // Count products per category
+        const catCounts = {};
+        products.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + 1; });
+
+        catGrid.innerHTML = categories.map(c => {
+            const icon = catIconMap[c] || "fa-box";
+            const count = catCounts[c] || 0;
+            return `
+                <a href="pages/products.html?category=${encodeURIComponent(c)}" class="cat-card">
+                    <div class="cat-icon">
+                        <i class="fa-solid ${icon}"></i>
+                    </div>
+                    <span>${c}</span>
+                    <div class="cat-count">${count} product${count !== 1 ? 's' : ''}</div>
+                </a>
+            `;
+        }).join("");
+    }
+
+    // ── Featured Products (10 random with images prioritized) ──
+    const grid = document.getElementById("featured-products");
+    const withImg = products.filter(p => p.image_url);
+    const withoutImg = products.filter(p => !p.image_url);
+    const pool = [...withImg.sort(() => Math.random() - 0.5), ...withoutImg.sort(() => Math.random() - 0.5)].slice(0, 10);
+
+    if (pool.length) {
+        grid.innerHTML = pool.map(p => {
+            const imgHTML = p.image_url
+                ? `<img src="${p.image_url}" alt="${p.name}">`
+                : `<i class="fa-solid ${catIconMap[p.category] || 'fa-box'}"></i>`;
+            const desc = p.description || '';
+            return `
+                <a href="pages/products.html" class="fp-card" data-id="${p.id}">
+                    <div class="fp-img">${imgHTML}</div>
+                    <div class="fp-info">
+                        <div class="fp-cat">${p.category}</div>
+                        <div class="fp-name">${p.name}</div>
+                        ${desc ? `<div class="fp-desc">${desc}</div>` : ''}
+                        <div class="fp-bottom">
+                            <div class="fp-price">${formatPrice(p.price)} <small>MAD</small></div>
+                            <button class="fp-add" onclick="event.preventDefault();event.stopPropagation();window._addToCart(${JSON.stringify(p).replace(/"/g, '&quot;')})" title="Add to cart">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }).join("");
+    } else {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">No products available yet.</div>';
+    }
+
+    // Add to cart handler
+    window._addToCart = function(product) {
+        if (product.stock === 0) return;
+        addToCart(product);
+        toast(product.name + " added to cart", "success");
+    };
+
+    // ── Stats counters ──
+    document.getElementById("stat-products").textContent = products.length;
+    document.getElementById("stat-categories").textContent = categories.length;
+
+    // Fetch order/customer stats
+    try {
+        const statsRes = await fetch("http://127.0.0.1:5000/api/stats");
+        const stats = await statsRes.json();
+        document.getElementById("stat-orders").textContent = stats.total_orders || "0";
+        document.getElementById("stat-customers").textContent = stats.total_users || "0";
+    } catch {
+        document.getElementById("stat-orders").textContent = "50+";
+        document.getElementById("stat-customers").textContent = "100+";
+    }
+</script>
+
+<!-- ── AI Chat Widget ── -->
+<div id="chat-widget-fab" onclick="toggleChatWidget()" title="Chat with AI Assistant">
+    <i class="fa-solid fa-comments"></i>
+</div>
+
+<div id="chat-widget-panel">
+    <div id="chat-widget-header">
+        <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#059669);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:700">AI</div>
+            <div>
+                <div style="font-size:14px;font-weight:700;color:var(--text)">Smart Assistant</div>
+                <div style="font-size:11px;color:#16a34a;font-weight:600"><i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px"></i>Online</div>
+            </div>
+        </div>
+        <button onclick="toggleChatWidget()" style="background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;padding:4px"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="chat-widget-messages">
+        <div class="cw-msg bot">
+            <div class="cw-avatar">AI</div>
+            <div class="cw-bubble">Hi! I'm your Smart Supermarket assistant. How can I help you today? Ask me about products, prices, or recommendations!</div>
+        </div>
+    </div>
+    <div id="chat-widget-input-area">
+        <input type="text" id="chat-widget-input" placeholder="Ask about products..." onkeydown="if(event.key==='Enter')sendChatWidget()">
+        <button onclick="sendChatWidget()" id="chat-widget-send"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<style>
+    #chat-widget-fab {
+        position: fixed; bottom: 24px; right: 24px;
+        width: 56px; height: 56px; border-radius: 50%;
+        background: linear-gradient(135deg, #16a34a, #059669);
+        color: white; font-size: 22px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 900;
+        box-shadow: 0 6px 20px rgba(22,163,74,0.4);
+        transition: all 0.25s;
+        animation: fabPulse 3s infinite;
+    }
+    #chat-widget-fab:hover { transform: scale(1.1); box-shadow: 0 8px 28px rgba(22,163,74,0.5); }
+    @keyframes fabPulse {
+        0%, 100% { box-shadow: 0 6px 20px rgba(22,163,74,0.4); }
+        50% { box-shadow: 0 6px 28px rgba(22,163,74,0.6); }
+    }
+    #chat-widget-panel {
+        position: fixed; bottom: 92px; right: 24px;
+        width: 380px; max-height: 520px;
+        background: #fff; border-radius: 20px;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+        z-index: 901; display: none; flex-direction: column;
+        overflow: hidden; border: 1px solid #e4e7f0;
+        animation: chatSlideUp 0.3s ease;
+    }
+    #chat-widget-panel.open { display: flex; }
+    @keyframes chatSlideUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    #chat-widget-header {
+        padding: 14px 18px; border-bottom: 1px solid #e4e7f0;
+        display: flex; align-items: center; justify-content: space-between;
+        background: #f5f6fa;
+    }
+    #chat-widget-messages {
+        flex: 1; overflow-y: auto; padding: 16px;
+        display: flex; flex-direction: column; gap: 14px;
+        max-height: 360px; min-height: 200px;
+    }
+    .cw-msg { display: flex; gap: 8px; align-items: flex-start; }
+    .cw-msg.user { flex-direction: row-reverse; }
+    .cw-avatar {
+        width: 28px; height: 28px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .cw-msg.bot .cw-avatar { background: linear-gradient(135deg,#16a34a,#059669); color: white; }
+    .cw-msg.user .cw-avatar { background: #16a34a; color: white; }
+    .cw-bubble { max-width: 80%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.55; }
+    .cw-msg.bot .cw-bubble { background: #f5f6fa; color: #1a1f36; border-bottom-left-radius: 4px; }
+    .cw-msg.user .cw-bubble { background: #16a34a; color: white; border-bottom-right-radius: 4px; }
+    .cw-typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px; }
+    .cw-typing-dot { width: 6px; height: 6px; background: #8891b8; border-radius: 50%; animation: cwBounce 1.2s infinite; }
+    .cw-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .cw-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes cwBounce {
+        0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+        30% { transform: translateY(-5px); opacity: 1; }
+    }
+    #chat-widget-input-area {
+        padding: 12px 14px; border-top: 1px solid #e4e7f0;
+        display: flex; gap: 8px; align-items: center; background: #fff;
+    }
+    #chat-widget-input {
+        flex: 1; border: 1px solid #d0d5e8; border-radius: 10px;
+        padding: 9px 14px; font-size: 13px; outline: none;
+        font-family: inherit; transition: border-color 0.15s;
+    }
+    #chat-widget-input:focus { border-color: #16a34a; }
+    #chat-widget-send {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: #16a34a; color: white; border: none;
+        font-size: 14px; cursor: pointer; transition: background 0.15s;
+        display: flex; align-items: center; justify-content: center;
+    }
+    #chat-widget-send:hover { background: #15803d; }
+</style>
+
+<script>
+    let _cwOpen = false;
+    let _cwHistory = [];
+    const _cwAPI = "http://127.0.0.1:5000/api/chatbot/customer";
+
+    function toggleChatWidget() {
+        _cwOpen = !_cwOpen;
+        document.getElementById("chat-widget-panel").classList.toggle("open", _cwOpen);
+        if (_cwOpen) document.getElementById("chat-widget-input").focus();
+    }
+
+    function sendChatWidget() {
+        const input = document.getElementById("chat-widget-input");
+        const text = input.value.trim();
+        if (!text) return;
+        const area = document.getElementById("chat-widget-messages");
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        const initial = user ? user.username[0].toUpperCase() : "U";
+
+        area.innerHTML += `<div class="cw-msg user"><div class="cw-avatar">${initial}</div><div class="cw-bubble">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>`;
+        _cwHistory.push({ role: "user", content: text });
+        input.value = "";
+        area.scrollTop = area.scrollHeight;
+
+        const typingId = "cw-typing-" + Date.now();
+        area.innerHTML += `<div class="cw-msg bot" id="${typingId}"><div class="cw-avatar">AI</div><div class="cw-bubble"><div class="cw-typing"><div class="cw-typing-dot"></div><div class="cw-typing-dot"></div><div class="cw-typing-dot"></div></div></div></div>`;
+        area.scrollTop = area.scrollHeight;
+
+        fetch(_cwAPI, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messages: _cwHistory })
+        })
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById(typingId);
+            if (el) el.remove();
+            const reply = data.reply || data.error || "Sorry, something went wrong.";
+            _cwHistory.push({ role: "assistant", content: reply });
+            area.innerHTML += `<div class="cw-msg bot"><div class="cw-avatar">AI</div><div class="cw-bubble">${reply.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div></div>`;
+            area.scrollTop = area.scrollHeight;
+        })
+        .catch(() => {
+            const el = document.getElementById(typingId);
+            if (el) el.remove();
+            area.innerHTML += `<div class="cw-msg bot"><div class="cw-avatar">AI</div><div class="cw-bubble">Sorry, I couldn't connect. Please try again.</div></div>`;
+            area.scrollTop = area.scrollHeight;
+        });
     }
 </script>
 </body>

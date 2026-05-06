@@ -17,10 +17,10 @@
     --text-2:     #4a5180;
     --muted:      #8891b8;
 
-    --primary:    #2563eb;
-    --primary-h:  #1d4ed8;
-    --primary-bg: #eff4ff;
-    --primary-bd: #bfcffe;
+    --primary:    #16a34a;
+    --primary-h:  #15803d;
+    --primary-bg: #f0fdf4;
+    --primary-bd: #bbf7d0;
 
     --green:      #16a34a;
     --green-bg:   #f0fdf4;
@@ -58,6 +58,10 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+/* ── Hide all scrollbars (keep scroll functionality) ── */
+*::-webkit-scrollbar { display: none; }
+* { -ms-overflow-style: none; scrollbar-width: none; }
 img  { max-width: 100%; display: block; }
 a    { text-decoration: none; color: inherit; }
 button { cursor: pointer; font-family: var(--font); }
@@ -511,11 +515,20 @@ tbody tr:hover { background: var(--bg); }
 .modal {
     background: var(--white);
     border-radius: var(--radius-xl);
-    padding: 28px;
     width: 100%;
     max-width: 480px;
+    max-height: 90vh;
     box-shadow: var(--shadow-lg);
     animation: modalIn 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 28px 8px;
 }
 
 @keyframes modalIn {
@@ -527,7 +540,8 @@ tbody tr:hover { background: var(--bg); }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 22px;
+    padding: 20px 28px 14px;
+    flex-shrink: 0;
 }
 
 .modal-title { font-size: 18px; font-weight: 700; }
@@ -546,10 +560,12 @@ tbody tr:hover { background: var(--bg); }
 .modal-close:hover { background: var(--border2); }
 
 .modal-footer {
-    margin-top: 24px;
+    padding: 14px 28px 20px;
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+    flex-shrink: 0;
+    border-top: 1px solid var(--border);
 }
 
 /* ── Toast notifications ── */
@@ -611,7 +627,7 @@ tbody tr:hover { background: var(--bg); }
     height: 180px !important;
     overflow: hidden !important;
     flex-shrink: 0;
-    background: var(--bg);
+    background: #ffffff;
     border-bottom: 1px solid var(--border);
 }
 
@@ -628,7 +644,7 @@ tbody tr:hover { background: var(--bg); }
 .product-img {
     width: 100%;
     height: 160px;
-    background: var(--bg);
+    background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -836,11 +852,11 @@ tbody tr:hover { background: var(--bg); }
 
 .feature-icon i {
     font-size: 40px;
-    color: #3b82f6;
+    color: #22c55e;
     transition: 0.3s;
 }
 
 .feature-card:hover .feature-icon i {
     transform: scale(1.2);
-    color: #2563eb;
+    color: #16a34a;
 }

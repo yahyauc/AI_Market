@@ -25,3 +25,8 @@ Thumbs.db
 # Uploads (keep folder structure)
 Backend/static/uploads/*
 !Backend/static/uploads/.gitkeep
+
+# Test files
+Frontend/test.js
+Frontend/test.py
+Backend/test.py

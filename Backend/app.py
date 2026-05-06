@@ -6,12 +6,15 @@ from models.user import User
 from models.product import Product
 from models.order import Order
 from models.order_item import OrderItem
+from models.zone import Zone
+from models.zone_log import ZoneLog
 from routes.auth import auth_bp
 from routes.products import products_bp
 from routes.orders import orders_bp
 from routes.stats import stats_bp
 from routes.chatbot import chatbot_bp
 from routes.reviews import reviews_bp
+from routes.vision import vision_bp
 from models.review import Review
 import os
 
@@ -30,15 +33,39 @@ def create_app():
     app.register_blueprint(stats_bp,    url_prefix="/api")
     app.register_blueprint(chatbot_bp,  url_prefix="/api")
     app.register_blueprint(reviews_bp,  url_prefix="/api")
+    app.register_blueprint(vision_bp,   url_prefix="/api")
 
     @app.route("/uploads/<filename>")
     def uploaded_file(filename):
         uploads_dir = os.path.join(app.root_path, "static", "uploads")
         return send_from_directory(uploads_dir, filename)
 
+    # ── Serve Frontend ────────────────────────────────────────────
+    frontend_dir = os.path.join(app.root_path, "..", "Frontend")
+
     @app.route("/")
     def home():
-        return jsonify({"message": "Smart Supermarket API is running", "version": "2.0"})
+        return send_from_directory(frontend_dir, "index.html")
+
+    @app.route("/index.html")
+    def home_index():
+        return send_from_directory(frontend_dir, "index.html")
+
+    @app.route("/pages/<path:filename>")
+    def serve_page(filename):
+        return send_from_directory(os.path.join(frontend_dir, "pages"), filename)
+
+    @app.route("/css/<path:filename>")
+    def serve_css(filename):
+        return send_from_directory(os.path.join(frontend_dir, "css"), filename)
+
+    @app.route("/js/<path:filename>")
+    def serve_js(filename):
+        return send_from_directory(os.path.join(frontend_dir, "js"), filename)
+
+    @app.route("/images/<path:filename>")
+    def serve_images(filename):
+        return send_from_directory(os.path.join(frontend_dir, "images"), filename)
 
     @app.errorhandler(404)
     def not_found(e):
@@ -64,24 +91,37 @@ def _seed_data():
         db.session.add_all([admin, customer])
         db.session.commit()
 
-    if Product.query.count() == 0:
-        products = [
-            Product(name="Whole Milk 1L",      category="Dairy",    price=8.50,  stock=30, description="Fresh whole milk"),
-            Product(name="Sourdough Bread",    category="Bakery",   price=12.00, stock=20, description="Artisan sourdough"),
-            Product(name="Apple Juice 1L",     category="Drinks",   price=15.00, stock=25, description="100% natural juice"),
-            Product(name="Cheddar Cheese",     category="Dairy",    price=35.00, stock=3,  description="Aged cheddar"),
-            Product(name="Olive Oil 500ml",    category="Pantry",   price=55.00, stock=15, description="Extra virgin"),
-            Product(name="Basmati Rice 1kg",   category="Pantry",   price=22.00, stock=40, description="Long grain rice"),
-            Product(name="Free Range Eggs x6", category="Dairy",    price=18.00, stock=2,  description="Farm fresh eggs"),
-            Product(name="Orange Juice 1L",    category="Drinks",   price=14.00, stock=18, description="Freshly squeezed"),
-            Product(name="Pasta 500g",         category="Pantry",   price=9.00,  stock=35, description="Durum wheat pasta"),
-            Product(name="Greek Yogurt 500g",  category="Dairy",    price=20.00, stock=0,  description="Creamy Greek yogurt"),
+    # Seed zones if none exist (products are added manually by admin)
+    if Zone.query.count() == 0:
+        zones = [
+            Zone(
+                name="Dairy Zone",
+                description="Milk, butter, yogurt, cheese and dairy products",
+                camera_source="0",
+                product_types="milk,butter,yogurt,cheese,eggs",
+                baseline_capacity=200,
+            ),
+            Zone(
+                name="Bakery Zone",
+                description="Bread, pastries and baked goods",
+                camera_source="0",
+                product_types="bread,croissant,pastry,cake",
+                baseline_capacity=150,
+            ),
+            Zone(
+                name="Beverages Zone",
+                description="Juices, soft drinks and water",
+                camera_source="0",
+                product_types="juice,water,soda,tea",
+                baseline_capacity=250,
+            ),
         ]
-        db.session.add_all(products)
+        db.session.add_all(zones)
         db.session.commit()
+        print(f"[SEED] Created {len(zones)} zones (add products manually via admin panel)")
 
 
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000, use_reloader=False)

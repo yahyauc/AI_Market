@@ -68,7 +68,7 @@
         }
 
         .modal-image {
-            background: var(--bg);
+            background: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -292,6 +292,133 @@
             .modal-body { grid-template-columns: 1fr; }
             .modal-image { min-height: 200px; border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
         }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 1024px) {
+            .products-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .products-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ── FP Card Styles (consistent with homepage) ── */
+        .fp-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fp-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+        }
+
+        .fp-img {
+            width: 100%;
+            height: 180px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .fp-img img {
+            max-width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+        }
+
+        .fp-img i { font-size: 36px; color: var(--border2); }
+
+        .fp-info {
+            padding: 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fp-cat {
+            font-size: 11px;
+            color: #16a34a;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+        }
+
+        .fp-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fp-desc {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .fp-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        .fp-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .fp-price small {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .fp-add {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: #16a34a;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fp-add:hover { background: #15803d; transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -420,33 +547,33 @@
         grid.innerHTML = filtered.map(p => {
             const emoji   = categoryEmoji(p.category);
             const imgHTML = p.image_url
-                ? '<div style="width:100%;height:180px;flex-shrink:0;border-bottom:1px solid #e4e7f0;background:#ffffff ;display:flex;align-items:center;justify-content:center;"><img src="' + p.image_url + '" alt="' + p.name + '" style="max-width:100%;max-height:180px;object-fit:contain;"></div>'
-                : '<div style="width:100%;height:180px;flex-shrink:0;border-bottom:1px solid #e4e7f0;display:flex;align-items:center;justify-content:center;background:#f5f6fa;font-size:48px;">' + emoji + '</div>';
+                ? `<img src="${p.image_url}" alt="${p.name}" style="max-width:100%;max-height:180px;object-fit:contain;">`
+                : `<i class="fa-solid fa-box" style="font-size:36px;color:var(--border2)"></i>`;
 
-            const stockBadge = p.stock === 0
-                ? '<span class="badge badge-red">Out of stock</span>'
-                : p.stock <= 5
-                    ? '<span class="badge badge-orange">Only ' + p.stock + ' left</span>'
-                    : '<span class="badge badge-green">In stock</span>';
-
-            const descHTML    = p.description ? '<p style="font-size:12px;color:var(--muted);margin-bottom:4px">' + p.description + '</p>' : '';
+            const desc = p.description || '';
             const btnDisabled = p.stock === 0 ? 'disabled' : '';
-            const btnText     = p.stock === 0 ? 'Out of stock' : '+ Add';
+            const stockLabel  = p.stock === 0
+                ? '<span style="font-size:11px;color:var(--red);font-weight:600">Out of stock</span>'
+                : p.stock <= 5
+                    ? '<span style="font-size:11px;color:var(--orange);font-weight:600">Only ' + p.stock + ' left</span>'
+                    : '<span style="font-size:11px;color:var(--green);font-weight:600">In stock</span>';
             const dataProduct = JSON.stringify(p).replace(/"/g, '&quot;');
 
-            return '<div class="product-card fade-up" style="cursor:pointer" onclick="openModal(' + p.id + ')">'
-                + imgHTML
-                + '<div class="product-body">'
-                + '<div class="product-name">' + p.name + '</div>'
-                + '<div class="product-cat">' + p.category + '</div>'
-                + descHTML
-                + '<div class="product-footer">'
-                + '<div class="product-price">' + formatPrice(p.price) + '</div>'
-                + '<button class="btn-add-cart" onclick="event.stopPropagation();handleAddToCart(' + dataProduct + ')" ' + btnDisabled + '>' + btnText + '</button>'
-                + '</div>'
-                + '<div style="margin-top:8px">' + stockBadge + '</div>'
-                + '</div>'
-                + '</div>';
+            return `<div class="fp-card fade-up" style="cursor:pointer" onclick="openModal(${p.id})">
+                <div class="fp-img">${imgHTML}</div>
+                <div class="fp-info">
+                    <div class="fp-cat">${p.category}</div>
+                    <div class="fp-name">${p.name}</div>
+                    ${desc ? `<div class="fp-desc">${desc}</div>` : ''}
+                    <div style="margin-bottom:6px">${stockLabel}</div>
+                    <div class="fp-bottom">
+                        <div class="fp-price">${formatPrice(p.price)} <small>MAD</small></div>
+                        <button class="fp-add" onclick="event.stopPropagation();handleAddToCart(${dataProduct})" ${btnDisabled} ${p.stock === 0 ? 'style="background:var(--muted);cursor:not-allowed"' : ''} title="${p.stock === 0 ? 'Out of stock' : 'Add to cart'}">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
         }).join("");
     }
 
@@ -675,6 +802,59 @@
     // ── Init ──────────────────────────────────────────────────────
     await loadCategories();
     await loadProducts();
+</script>
+
+<!-- ── AI Chat Widget ── -->
+<div id="chat-widget-fab" onclick="toggleChatWidget()" title="Chat with AI Assistant">
+    <i class="fa-solid fa-comments"></i>
+</div>
+<div id="chat-widget-panel">
+    <div id="chat-widget-header">
+        <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#059669);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:700">AI</div>
+            <div>
+                <div style="font-size:14px;font-weight:700;color:#1a1f36">Smart Assistant</div>
+                <div style="font-size:11px;color:#16a34a;font-weight:600"><i class="fa-solid fa-circle" style="font-size:6px;margin-right:4px"></i>Online</div>
+            </div>
+        </div>
+        <button onclick="toggleChatWidget()" style="background:none;border:none;font-size:18px;color:#8891b8;cursor:pointer;padding:4px"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="chat-widget-messages">
+        <div class="cw-msg bot"><div class="cw-avatar">AI</div><div class="cw-bubble">Hi! I'm your Smart Supermarket assistant. How can I help you find what you're looking for?</div></div>
+    </div>
+    <div id="chat-widget-input-area">
+        <input type="text" id="chat-widget-input" placeholder="Ask about products..." onkeydown="if(event.key==='Enter')sendChatWidget()">
+        <button onclick="sendChatWidget()" id="chat-widget-send"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+</div>
+<style>
+    #chat-widget-fab{position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#059669);color:white;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:900;box-shadow:0 6px 20px rgba(22,163,74,0.4);transition:all 0.25s;animation:fabPulse 3s infinite}
+    #chat-widget-fab:hover{transform:scale(1.1);box-shadow:0 8px 28px rgba(22,163,74,0.5)}
+    @keyframes fabPulse{0%,100%{box-shadow:0 6px 20px rgba(22,163,74,0.4)}50%{box-shadow:0 6px 28px rgba(22,163,74,0.6)}}
+    #chat-widget-panel{position:fixed;bottom:92px;right:24px;width:380px;max-height:520px;background:#fff;border-radius:20px;box-shadow:0 16px 48px rgba(0,0,0,0.15);z-index:901;display:none;flex-direction:column;overflow:hidden;border:1px solid #e4e7f0;animation:chatSlideUp 0.3s ease}
+    #chat-widget-panel.open{display:flex}
+    @keyframes chatSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    #chat-widget-header{padding:14px 18px;border-bottom:1px solid #e4e7f0;display:flex;align-items:center;justify-content:space-between;background:#f5f6fa}
+    #chat-widget-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;max-height:360px;min-height:200px}
+    .cw-msg{display:flex;gap:8px;align-items:flex-start}.cw-msg.user{flex-direction:row-reverse}
+    .cw-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+    .cw-msg.bot .cw-avatar{background:linear-gradient(135deg,#16a34a,#059669);color:white}.cw-msg.user .cw-avatar{background:#16a34a;color:white}
+    .cw-bubble{max-width:80%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.55}
+    .cw-msg.bot .cw-bubble{background:#f5f6fa;color:#1a1f36;border-bottom-left-radius:4px}.cw-msg.user .cw-bubble{background:#16a34a;color:white;border-bottom-right-radius:4px}
+    .cw-typing{display:flex;gap:4px;align-items:center;padding:10px 14px}
+    .cw-typing-dot{width:6px;height:6px;background:#8891b8;border-radius:50%;animation:cwBounce 1.2s infinite}
+    .cw-typing-dot:nth-child(2){animation-delay:0.2s}.cw-typing-dot:nth-child(3){animation-delay:0.4s}
+    @keyframes cwBounce{0%,60%,100%{transform:translateY(0);opacity:0.4}30%{transform:translateY(-5px);opacity:1}}
+    #chat-widget-input-area{padding:12px 14px;border-top:1px solid #e4e7f0;display:flex;gap:8px;align-items:center;background:#fff}
+    #chat-widget-input{flex:1;border:1px solid #d0d5e8;border-radius:10px;padding:9px 14px;font-size:13px;outline:none;font-family:inherit;transition:border-color 0.15s}
+    #chat-widget-input:focus{border-color:#16a34a}
+    #chat-widget-send{width:36px;height:36px;border-radius:10px;background:#16a34a;color:white;border:none;font-size:14px;cursor:pointer;transition:background 0.15s;display:flex;align-items:center;justify-content:center}
+    #chat-widget-send:hover{background:#15803d}
+</style>
+<script>
+    let _cwOpen=false,_cwHistory=[];const _cwAPI="http://127.0.0.1:5000/api/chatbot/customer";
+    function toggleChatWidget(){_cwOpen=!_cwOpen;document.getElementById("chat-widget-panel").classList.toggle("open",_cwOpen);if(_cwOpen)document.getElementById("chat-widget-input").focus()}
+    function sendChatWidget(){const input=document.getElementById("chat-widget-input");const text=input.value.trim();if(!text)return;const area=document.getElementById("chat-widget-messages");const user=JSON.parse(localStorage.getItem("user")||"null");const initial=user?user.username[0].toUpperCase():"U";area.innerHTML+=`<div class="cw-msg user"><div class="cw-avatar">${initial}</div><div class="cw-bubble">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>`;_cwHistory.push({role:"user",content:text});input.value="";area.scrollTop=area.scrollHeight;const typingId="cw-typing-"+Date.now();area.innerHTML+=`<div class="cw-msg bot" id="${typingId}"><div class="cw-avatar">AI</div><div class="cw-bubble"><div class="cw-typing"><div class="cw-typing-dot"></div><div class="cw-typing-dot"></div><div class="cw-typing-dot"></div></div></div></div>`;area.scrollTop=area.scrollHeight;fetch(_cwAPI,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:_cwHistory})}).then(r=>r.json()).then(data=>{const el=document.getElementById(typingId);if(el)el.remove();const reply=data.reply||data.error||"Sorry, something went wrong.";_cwHistory.push({role:"assistant",content:reply});area.innerHTML+=`<div class="cw-msg bot"><div class="cw-avatar">AI</div><div class="cw-bubble">${reply.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div></div>`;area.scrollTop=area.scrollHeight}).catch(()=>{const el=document.getElementById(typingId);if(el)el.remove();area.innerHTML+=`<div class="cw-msg bot"><div class="cw-avatar">AI</div><div class="cw-bubble">Sorry, I couldn't connect. Please try again.</div></div>`;area.scrollTop=area.scrollHeight})}
 </script>
 </body>
 </html>
